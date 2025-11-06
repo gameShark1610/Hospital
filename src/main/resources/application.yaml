@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost\SQLEXPRESS:1433;databaseName=Aerolineas;encrypt=true;trustServerCertificate=true;
+    username: user
+    password: 1234
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update # or create, create-drop, none
+    show-sql: true # set to false in production
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect # For older versions use org.hibernate.dialect.SQLServer2012Dialect or similar
+        format_sql: true # set to false in production
