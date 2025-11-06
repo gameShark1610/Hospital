@@ -3,12 +3,16 @@ package com.hospital.lacurita.hospital.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "User")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int usuarioId;
 
+    @Column(name = "Usuario", nullable = false, length = 100)
     private String correo;
+
+    @Column(name = "Contraseña", nullable = false, length = 100)
     private String password;
 
 
