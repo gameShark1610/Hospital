@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
-      ddl-auto: update # or create, create-drop, none
+      ddl-auto: none # or create, create-drop, none
     show-sql: true # set to false in production
     properties:
       hibernate:
