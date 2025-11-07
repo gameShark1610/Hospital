@@ -6,6 +6,7 @@ import com.hospital.lacurita.hospital.model.User;
 import com.hospital.lacurita.hospital.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,19 +17,6 @@ public class Login {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            User user = userService.authenticate(loginRequest.getCorreo(), loginRequest.getPassword());
-            if (user != null) {
-                return ResponseEntity.ok(user);
-            }
-            return ResponseEntity.badRequest().body("Invalid credentials");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
-        }
-    }
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
         try {
@@ -37,5 +25,14 @@ public class Login {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getCurrentUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return ResponseEntity.ok(authentication.getPrincipal());
+        }
+        return ResponseEntity.badRequest().body("No user authenticated");
     }
 }
