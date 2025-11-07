@@ -3,10 +3,11 @@ package com.hospital.lacurita.hospital.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "User")
+@Table(name = "Usuario")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "UsuarioId", insertable = false, updatable = false)
     private int usuarioId;
 
     @Column(name = "Usuario", nullable = false, length = 100)
@@ -19,6 +20,22 @@ public class User {
     @OneToOne
     @JoinColumn(name = "TipoUsuarioId")
     private TipoUsuario tipoUsuario;
+
+    public TipoUsuario getTipoUsuario() {
+        return tipoUsuario;
+    }
+
+    public void setTipoUsuario(TipoUsuario tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
+    }
+
+    public Persona getPersona() {
+        return persona;
+    }
+
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
 
     @OneToOne
     @JoinColumn(name = "PersonaId")

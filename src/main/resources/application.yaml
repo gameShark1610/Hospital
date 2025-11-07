@@ -4,11 +4,13 @@ spring:
     username: user
     password: 1234
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
   jpa:
     hibernate:
-      ddl-auto: none # or create, create-drop, none
-    show-sql: true # set to false in production
+      ddl-auto: none
+    show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.SQLServerDialect # For older versions use org.hibernate.dialect.SQLServer2012Dialect or similar
-        format_sql: true # set to false in production
+        dialect: org.hibernate.dialect.SQLServerDialect
+        format_sql: true
+        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
