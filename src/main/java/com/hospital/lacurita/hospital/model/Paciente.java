@@ -1,7 +1,9 @@
 package com.hospital.lacurita.hospital.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "Paciente")
 public class Paciente {
@@ -13,19 +15,7 @@ public class Paciente {
     @JoinColumn(name = "UsuarioId")
     private User user;
 
-    public int getPacienteId() {
-        return pacienteId;
-    }
-
-    public void setPacienteId(int pacienteId) {
-        this.pacienteId = pacienteId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    @OneToOne
+    @JoinColumn(name = "HistorialMedicoId")
+    private HistorialMedico historialMedico;
 }

@@ -1,8 +1,10 @@
 package com.hospital.lacurita.hospital.service;
 
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
+import com.hospital.lacurita.hospital.model.Paciente;
 import com.hospital.lacurita.hospital.model.TipoUsuario;
 import com.hospital.lacurita.hospital.model.User;
+import com.hospital.lacurita.hospital.repository.PacienteRepository;
 import com.hospital.lacurita.hospital.repository.TipoUsuarioRepository;
 import com.hospital.lacurita.hospital.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -46,7 +50,27 @@ public class UserService {
         user.setCorreo(registerRequest.getCorreo());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setTipoUsuario(tipoUsuario);
+        userRepository.save(user);
+        //Create kind of user
+        createTipoUsuario(tipoUsuario, user);
 
-        return userRepository.save(user);
+        return user;
     }
+
+    public void createTipoUsuario(TipoUsuario tipoUsuario, User user) {
+        switch (tipoUsuario.getTipoUsuarioId()){
+            case 0:
+                Paciente paciente = new Paciente();
+                paciente.setUser(user);
+                pacienteRepository.save(paciente);
+                break;
+            case 1:
+                //tipoUsuarioRepository.save(tipoUsuario);
+                break;
+            case 2:
+                //tipoUsuarioRepository.save(tipoUsuario);
+                break;
+        }
+    }
+
 }
