@@ -3,7 +3,7 @@ package com.hospital.lacurita.hospital.service;
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
 import com.hospital.lacurita.hospital.model.Paciente;
 import com.hospital.lacurita.hospital.model.TipoUsuario;
-import com.hospital.lacurita.hospital.model.User;
+import com.hospital.lacurita.hospital.model.Usuario;
 import com.hospital.lacurita.hospital.repository.PacienteRepository;
 import com.hospital.lacurita.hospital.repository.TipoUsuarioRepository;
 import com.hospital.lacurita.hospital.repository.UserRepository;
@@ -26,16 +26,16 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User authenticate(String correo, String password) {
-        User user = userRepository.findByCorreo(correo).orElse(null);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+    public Usuario authenticate(String correo, String password) {
+        Usuario user = userRepository.findByCorreo(correo).orElse(null);
+        if (user != null && passwordEncoder.matches(password, user.getContraseña())) {
             return user;
         }
         return null;
     }
 
     @Transactional
-    public User register(RegisterRequest registerRequest) {
+    public Usuario register(RegisterRequest registerRequest) {
         // Check if user already exists
         if (userRepository.findByCorreo(registerRequest.getCorreo()).isPresent()) {
             throw new RuntimeException("Email already registered");
@@ -46,9 +46,9 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Invalid user type"));
 
         // Create new user
-        User user = new User();
-        user.setCorreo(registerRequest.getCorreo());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        Usuario user = new Usuario();
+        user.setUsuario(registerRequest.getCorreo());
+        user.setContraseña(passwordEncoder.encode(registerRequest.getPassword()));
         user.setTipoUsuario(tipoUsuario);
         userRepository.save(user);
         //Create kind of user
@@ -57,11 +57,11 @@ public class UserService {
         return user;
     }
 
-    public void createTipoUsuario(TipoUsuario tipoUsuario, User user) {
-        switch (tipoUsuario.getTipoUsuarioId()){
+    public void createTipoUsuario(TipoUsuario tipoUsuario, Usuario user) {
+        switch (tipoUsuario.getId()){
             case 0:
                 Paciente paciente = new Paciente();
-                paciente.setUser(user);
+                paciente.setUsuario(user);
                 pacienteRepository.save(paciente);
                 break;
             case 1:

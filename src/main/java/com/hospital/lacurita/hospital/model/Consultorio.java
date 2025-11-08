@@ -4,21 +4,19 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-public class TipoUsuario {
+public class Consultorio {
     @Id
-    @Column(name = "TipoUsuarioId", nullable = false)
+    @Column(name = "ConsultorioId", nullable = false)
     private Integer id;
 
-    @Size(max = 50)
     @NotNull
-    @Column(name = "TipoUsuario", nullable = false, length = 50)
-    private String tipoUsuario;
+    @Column(name = "NumConsultorio", nullable = false)
+    private Integer numConsultorio;
 
 }

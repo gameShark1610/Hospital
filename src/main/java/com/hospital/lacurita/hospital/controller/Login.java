@@ -1,8 +1,7 @@
 package com.hospital.lacurita.hospital.controller;
 
-import com.hospital.lacurita.hospital.dto.LoginRequest;
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
-import com.hospital.lacurita.hospital.model.User;
+import com.hospital.lacurita.hospital.model.Usuario;
 import com.hospital.lacurita.hospital.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class Login {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
         try {
-            User registeredUser = userService.register(registerRequest);
+            Usuario registeredUser = userService.register(registerRequest);
             return ResponseEntity.ok(registeredUser);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());

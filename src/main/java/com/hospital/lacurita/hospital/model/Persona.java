@@ -1,26 +1,38 @@
 package com.hospital.lacurita.hospital.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Date;
-@Data
+import java.time.LocalDate;
+
+@Getter
+@Setter
 @Entity
-@Table(name = "Persona")
 public class Persona {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int personaId;
+    @Column(name = "PersonaId", nullable = false)
+    private Integer id;
 
-    @Column(name = "Nombre", nullable = false, length = 100)
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "Nombre", nullable = false, length = 50)
     private String nombre;
 
-    @Column(name = "Paterno", nullable = false, length = 100)
-    private String apellidoPaterno;
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "Paterno", nullable = false, length = 50)
+    private String paterno;
 
-    @Column(name = "Materno", nullable = false, length = 100)
-    private String apellidoMaterno;
+    @Size(max = 50)
+    @Column(name = "Materno", length = 50)
+    private String materno;
 
-    @Column(name = "FechaNac", nullable = false, length = 100)
-    private Date FechaNacimiento;
+    @NotNull
+    @Column(name = "FechaNacim", nullable = false)
+    private LocalDate fechaNacim;
+
 }

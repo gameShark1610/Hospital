@@ -4,21 +4,25 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalTime;
 
 @Getter
 @Setter
 @Entity
-public class TipoUsuario {
+public class HorarioPreestablecido {
     @Id
-    @Column(name = "TipoUsuarioId", nullable = false)
+    @Column(name = "IdHorario", nullable = false)
     private Integer id;
 
-    @Size(max = 50)
     @NotNull
-    @Column(name = "TipoUsuario", nullable = false, length = 50)
-    private String tipoUsuario;
+    @Column(name = "HorarioIni", nullable = false)
+    private LocalTime horarioIni;
+
+    @NotNull
+    @Column(name = "HorarioFin", nullable = false)
+    private LocalTime horarioFin;
 
 }

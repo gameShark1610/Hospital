@@ -1,21 +1,26 @@
 package com.hospital.lacurita.hospital.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
-@Table(name = "Paciente")
 public class Paciente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int pacienteId;
+    @Column(name = "PacienteId", nullable = false)
+    private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "UsuarioId")
-    private User user;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "UsuarioId", nullable = false)
+    private Usuario usuario;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "HistorialMedicoId")
     private HistorialMedico historialMedico;
+
 }

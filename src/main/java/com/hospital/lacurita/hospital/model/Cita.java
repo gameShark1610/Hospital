@@ -1,38 +1,47 @@
 package com.hospital.lacurita.hospital.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
 
-@Data
+@Getter
+@Setter
 @Entity
-@Table(name = "Cita")
 public class Cita {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int folioCita;
+    @Column(name = "FolioCita", nullable = false)
+    private Integer id;
 
-    @Column(name = "Fecha", nullable = false, length = 100)
-    LocalDate fecha;
+    @NotNull
+    @Column(name = "Fecha", nullable = false)
+    private Instant fecha;
 
-    @Column(name = "FechaAgendada", nullable = false, length = 100)
-    LocalDate fechaAgendada;
+    @NotNull
+    @Column(name = "FechaAgendada", nullable = false)
+    private LocalDate fechaAgendada;
 
-    @Column(name = "Estatus", nullable = false, length = 100)
-    boolean estatus;
+    @NotNull
+    @Column(name = "Estatus", nullable = false)
+    private Boolean estatus = false;
 
-    @Column(name = "Hora", nullable = false, length = 100)
-    LocalTime hora;
-
-    @ManyToOne
-    @JoinColumn(name = "PacienteId")
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "PacienteId", nullable = false)
     private Paciente paciente;
 
-    @ManyToOne
-    @JoinColumn(name = "PacienteId")
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "DoctorId", nullable = false)
     private Doctor doctor;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "HorarioId", nullable = false)
+    private HorarioPreestablecido horario;
 
 }

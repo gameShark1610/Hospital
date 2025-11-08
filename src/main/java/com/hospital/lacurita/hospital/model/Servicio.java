@@ -8,17 +8,23 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
-public class TipoUsuario {
+public class Servicio {
     @Id
-    @Column(name = "TipoUsuarioId", nullable = false)
+    @Column(name = "ServicioId", nullable = false)
     private Integer id;
 
     @Size(max = 50)
     @NotNull
-    @Column(name = "TipoUsuario", nullable = false, length = 50)
-    private String tipoUsuario;
+    @Column(name = "Servicio", nullable = false, length = 50)
+    private String servicio;
+
+    @NotNull
+    @Column(name = "Precio", nullable = false)
+    private BigDecimal precio;
 
 }

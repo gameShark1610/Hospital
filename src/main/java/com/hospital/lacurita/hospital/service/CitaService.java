@@ -27,8 +27,8 @@ public class CitaService {
 
         Cita cita = new Cita();
         cita.setFecha(citaRequest.getFecha());
-        cita.setFechaAgendada(citaRequest.getFecha());
-        cita.setHora(citaRequest.getFecha());
+        cita.setFechaAgendada(citaRequest.getFechaAgendad());
+        //cita.setHorario();
         //Obtener el idPaciente
         //cita.set(citaRequest.getFecha());
 

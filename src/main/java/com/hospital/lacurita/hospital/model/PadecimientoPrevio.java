@@ -11,14 +11,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class TipoUsuario {
+public class PadecimientoPrevio {
     @Id
-    @Column(name = "TipoUsuarioId", nullable = false)
+    @Column(name = "PadecimientoPrevioId", nullable = false)
     private Integer id;
 
-    @Size(max = 50)
+    @Size(max = 100)
     @NotNull
-    @Column(name = "TipoUsuario", nullable = false, length = 50)
-    private String tipoUsuario;
+    @Column(name = "Padecimiento", nullable = false, length = 100)
+    private String padecimiento;
 
 }
