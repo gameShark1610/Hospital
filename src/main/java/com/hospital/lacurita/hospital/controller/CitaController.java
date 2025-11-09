@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/Cita")
-public class Cita {
+public class CitaController {
     @Autowired
     private CitaService citaService;
 
