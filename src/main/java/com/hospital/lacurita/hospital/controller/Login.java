@@ -4,9 +4,13 @@ import com.hospital.lacurita.hospital.dto.RegisterRequest;
 import com.hospital.lacurita.hospital.model.Usuario;
 import com.hospital.lacurita.hospital.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -30,8 +34,15 @@ public class Login {
     public ResponseEntity<?> getCurrentUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            return ResponseEntity.ok(authentication.getPrincipal());
+            Usuario usuario = (Usuario) authentication.getPrincipal();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("usuarioId", usuario.getId());
+            response.put("usuario", usuario.getUsuario());
+
+            return ResponseEntity.ok(response);
         }
-        return ResponseEntity.badRequest().body("No user authenticated");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user authenticated");
+
     }
 }
