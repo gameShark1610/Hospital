@@ -73,15 +73,15 @@ public class UserService {
 
     public void createTipoUsuario(TipoUsuario tipoUsuario, Usuario user) {
         switch (tipoUsuario.getId()){
-            case 0:
+            case 1:
                 Paciente paciente = new Paciente();
                 paciente.setUsuario(user);
                 pacienteRepository.save(paciente);
                 break;
-            case 1:
+            case 2:
                 //tipoUsuarioRepository.save(tipoUsuario);
                 break;
-            case 2:
+            case 3:
                 //tipoUsuarioRepository.save(tipoUsuario);
                 break;
         }
