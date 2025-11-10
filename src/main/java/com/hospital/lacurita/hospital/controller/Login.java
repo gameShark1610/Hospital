@@ -1,11 +1,16 @@
 package com.hospital.lacurita.hospital.controller;
 
+import com.hospital.lacurita.hospital.dto.LoginRequest;
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
 import com.hospital.lacurita.hospital.model.Usuario;
 import com.hospital.lacurita.hospital.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +24,10 @@ public class Login {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
@@ -45,4 +54,23 @@ public class Login {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user authenticated");
 
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        try {
+            String username = loginRequest.getUsuario();
+            String password = loginRequest.getPassword();
+
+            var authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            var authentication = authenticationManager.authenticate(authenticationToken);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            request.getSession(true).setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+            return ResponseEntity.ok("Login successful");
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
+
 }
