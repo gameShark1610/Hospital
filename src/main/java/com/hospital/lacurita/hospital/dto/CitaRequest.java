@@ -11,6 +11,5 @@ import java.util.Date;
 public class CitaRequest {
     private LocalDate FechaAgendada;
     private Integer horarioId;
-    private Integer pacienteId;
     private Integer doctorId;
 }
