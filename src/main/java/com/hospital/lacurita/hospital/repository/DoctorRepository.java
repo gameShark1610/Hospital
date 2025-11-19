@@ -8,8 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
-
-    @Query(value = "SELECT DoctorId, NombreCompletoDoctor FROM DoctoresEspecialidad(:especialidadId)", nativeQuery = true)
-    List<Object[]> findDoctoresByEspecialidad(@Param("especialidadId") Integer especialidadId);
+    @Query(value = "SELECT DoctorId, NombreCompletoDoctor FROM DoctoresEspecialidad(:especialidadId,:pacineteId)", nativeQuery = true)
+    List<Object[]> findDoctoresByEspecialidad(@Param("especialidadId") Integer especialidadId, @Param("pacineteId") Integer pacineteId);
 
 }

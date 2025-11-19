@@ -10,13 +10,15 @@ import java.util.stream.Collectors;
 @Service
 public class DoctorService {
     private final DoctorRepository doctorRepository;
-
-    public DoctorService(DoctorRepository doctorRepository) {
+    private final UserService userService;
+    public DoctorService(DoctorRepository doctorRepository, UserService userService) {
         this.doctorRepository = doctorRepository;
+        this.userService = userService;
     }
 
     public List<DoctorDTO> getDoctoresPorEspecialidad(Integer especialidadId) {
-        List<Object[]> results = doctorRepository.findDoctoresByEspecialidad(especialidadId);
+        Integer idPaciente = userService.obtenerUsuarioIdActual();
+        List<Object[]> results = doctorRepository.findDoctoresByEspecialidad(especialidadId,idPaciente);
         return results.stream()
                 .map(row -> new DoctorDTO((Integer) row[0], (String) row[1]))
                 .collect(Collectors.toList());

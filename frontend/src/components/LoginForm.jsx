@@ -41,6 +41,7 @@ function Login() {
           value={usuario}
           onChange={(e) => setUsuario(e.target.value)}
           required
+          maxLength={32}
         />
         <br />
         <input
