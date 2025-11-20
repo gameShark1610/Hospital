@@ -4,7 +4,7 @@ import "../styles/registro.css";
 
 function Registro() {
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     correo: "",
     password: "",
@@ -58,15 +58,15 @@ function Registro() {
     const dataToSend = {
       correo: formData.correo,
       password: formData.password,
-      tipoUsuario: formData.tipoUsuario,
+      tipoUsuarioId: parseInt(formData.tipoUsuario, 10),
       nombre: formData.nombre,
       paterno: formData.paterno,
       materno: formData.materno,
-      fechaNac: formData.fechaNac
+      fechaNacim: formData.fechaNac
     };
 
     try {
-      const response = await fetch("http://localhost:8080/api/registro", {
+      const response = await fetch("http://localhost:8080/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -81,16 +81,22 @@ function Registro() {
 
       const data = await response.json();
       setSuccessMessage("¡Registro exitoso! Redirigiendo al login...");
-      
+
       // Redirigir al login después de 2 segundos
       setTimeout(() => {
         navigate("/login");
       }, 2000);
 
     } catch (error) {
-      setErrorMessage(error.message || "Error al registrar. Intenta de nuevo.");
+      // Check for specific error messages
+      if (error.message === "Email already registered") {
+        setErrorMessage("Este usuario ya está registrado");
+      } else {
+        setErrorMessage(error.message || "Error al registrar. Intenta de nuevo.");
+      }
       console.error("Error en registro:", error);
     }
+
   };
 
   return (
@@ -125,8 +131,8 @@ function Registro() {
               required
             >
               <option value="">Selecciona tipo de usuario</option>
-              <option value="paciente">Paciente</option>
-              <option value="doctor">Doctor</option>
+              <option value="1">Paciente</option>
+              <option value="2">Doctor</option>
             </select>
           </div>
 
@@ -185,14 +191,14 @@ function Registro() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="correo">Correo Electrónico</label>
+            <label htmlFor="correo">Usuario</label>
             <input
-              type="email"
+              type="text"
               id="correo"
               name="correo"
               value={formData.correo}
               onChange={handleChange}
-              placeholder="ejemplo@correo.com"
+              placeholder="User123"
               required
             />
           </div>

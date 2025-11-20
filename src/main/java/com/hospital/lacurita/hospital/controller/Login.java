@@ -34,10 +34,16 @@ public class Login {
         try {
             Usuario registeredUser = userService.register(registerRequest);
             return ResponseEntity.ok(registeredUser);
+        } catch (RuntimeException e) {
+            // This will catch the specific "Email already registered" exception
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Registration failed: " + e.getMessage()));
         }
     }
+
 
     @GetMapping("/user")
     public ResponseEntity<?> getCurrentUser() {
