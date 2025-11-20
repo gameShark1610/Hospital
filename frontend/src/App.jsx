@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import LoginForm from "./components/LoginForm";
+import LoginForm from "./components/login";
 import Citas from "./components/citas";
 import "./App.css";
 

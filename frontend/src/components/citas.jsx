@@ -64,7 +64,7 @@ function Citas() {
 
     // Minimum date: 2 days from today
     const minDate = new Date(today);
-    minDate.setDate(minDate.getDate() + 2);
+    minDate.setDate(minDate.getDate() + 1);
 
     // Maximum date: 3 months from today
     const maxDate = new Date(today);
