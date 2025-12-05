@@ -12,6 +12,7 @@ import com.hospital.lacurita.hospital.repository.DoctorRepository;
 import com.hospital.lacurita.hospital.repository.HorarioPreestablecidoRepository;
 import com.hospital.lacurita.hospital.repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -76,6 +77,17 @@ public class CitaService {
 
         return dto;
     }
+
+    public ResponseEntity<?> actualizarEstatus(Integer idCita) {
+        Cita cita = citaRepository.findById(idCita)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+        cita.setEstatus(1);
+        citaRepository.save(cita);
+
+        return ResponseEntity.ok("Estatus actualizado");
+    }
+
 
 
     public CitaResponseDTO crearCita(CitaRequest citaRequest){

@@ -122,9 +122,9 @@ function MisCitas() {
     setCitasFiltradas(resultado);
   };
 
-  const irAPagar = (citaId) => {
-    navigate("/pagar", { state: { idCita: citaId } });
-  };
+  const irAPagar = (cita) => {
+  navigate("/usuario/pagar", { state: { cita } });
+};
 
   const cancelarCita = async (citaId) => {
     if (!window.confirm("¿Estás seguro de que deseas cancelar esta cita?")) {
@@ -191,7 +191,7 @@ function MisCitas() {
     if (cita.estado === "pending" && !cita.pagado) {
       return (
         <>
-          <button className="btn btn-pay" onClick={() => irAPagar(cita.id)}>
+          <button className="btn btn-pay" onClick={() => irAPagar(cita)}>
             Pagar ${cita.precio.toFixed(2)}
           </button>
           <button className="btn btn-cancel" onClick={() => cancelarCita(cita.id)}>

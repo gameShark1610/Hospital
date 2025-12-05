@@ -22,8 +22,9 @@ public class CitaController {
 
     }
 
-    @GetMapping("/pagar")
-    public ResponseEntity<?> pagarCita() {
-        return ResponseEntity.notFound().build();
+    @PostMapping("/pagar/{id}")
+    public ResponseEntity<?> pagarCita(@PathVariable Integer id) {
+        return ResponseEntity.ok(citaService.actualizarEstatus(id));
     }
+
 }

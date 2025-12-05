@@ -6,6 +6,7 @@ import Registro from "./components/registro";
 import PaginaRecepcionista from "./components/recepcionista/PaginaRecepcionista";
 import MisCitas from "./components/usuario/mis-citas";
 import PerfilUser from "./components/usuario/perfil";
+import PagarCita from "./components/usuario/pagar";
 import "./App.css";
 
 //It checks if there’s a flag called "isLoggedIn" in localStorage. If the flag is present, it allows access to the protected route; otherwise, it redirects the user to the login page.
@@ -48,6 +49,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
+        <Route
+          path="/usuario/pagar"
+          element={
+            <ProtectedRoute>
+              <PagarCita />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/usuario/perfil"
@@ -57,6 +67,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+
 
         {/* Default route */}
         <Route path="*" element={<Navigate to="/login" replace />} />

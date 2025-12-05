@@ -1,0 +1,111 @@
+.pagar-page {
+    background: #f4f6f9;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.pagar-container {
+    background: white;
+    padding: 25px 35px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 430px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.pagar-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.pagar-header .icon {
+    font-size: 2.5rem;
+}
+
+.pagar-header h1 {
+    margin: 10px 0 5px;
+    font-size: 1.7rem;
+    color: #333;
+}
+
+.pagar-header p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.cita-info {
+    margin-top: 20px;
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #f9fafc;
+    border-radius: 10px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.label {
+    font-weight: bold;
+    color: #444;
+}
+
+.value {
+    color: #222;
+}
+
+.payment-section {
+    text-align: center;
+}
+
+.payment-note {
+    background: #fff4d1;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #8a6d1d;
+    margin-bottom: 20px;
+}
+
+.pagar-btn {
+    width: 100%;
+    padding: 12px;
+    background: #1976d2;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: 0.2s;
+}
+
+.pagar-btn:hover:not(:disabled) {
+    background: #135ca5;
+}
+
+.pagar-btn:disabled {
+    background: #9bbad9;
+    cursor: not-allowed;
+}
+
+.cancelar-btn {
+    width: 100%;
+    padding: 12px;
+    background: #d32f2f;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.cancelar-btn:hover:not(:disabled) {
+    background: #a32424;
+}
