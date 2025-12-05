@@ -195,7 +195,7 @@ function Perfil() {
             <a href="#" className="navbar-link" onClick={(e) => { e.preventDefault(); navigate("/mis-citas"); }}>
               Mis Citas
             </a>
-            <a href="#" className="navbar-link" onClick={(e) => { e.preventDefault(); navigate("/citas"); }}>
+            <a href="#" className="navbar-link" onClick={(e) => { e.preventDefault(); navigate("/usuario/citas"); }}>
               Agendar Cita
             </a>
             <a

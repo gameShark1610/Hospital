@@ -1,4 +1,4 @@
-package com.hospital.lacurita.hospital.controller;
+package com.hospital.lacurita.hospital.controller.Usuario;
 
 
 import com.hospital.lacurita.hospital.dto.DoctorDTO;

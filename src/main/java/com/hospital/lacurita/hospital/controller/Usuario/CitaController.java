@@ -1,4 +1,4 @@
-package com.hospital.lacurita.hospital.controller;
+package com.hospital.lacurita.hospital.controller.Usuario;
 import com.hospital.lacurita.hospital.dto.CitaRequest;
 import com.hospital.lacurita.hospital.service.CitaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,12 @@ public class CitaController {
     @PostMapping("/agendar")
     public ResponseEntity<?> agendarCita(@RequestBody CitaRequest citaRequest) {
         return ResponseEntity.ok(citaService.crearCita(citaRequest));
+    }
+
+    @GetMapping("/mis-Citas")
+    public ResponseEntity<?> misCitas() {
+
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/pagar")

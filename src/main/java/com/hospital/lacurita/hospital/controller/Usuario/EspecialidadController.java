@@ -1,4 +1,4 @@
-package com.hospital.lacurita.hospital.controller;
+package com.hospital.lacurita.hospital.controller.Usuario;
 
 import com.hospital.lacurita.hospital.model.Especialidad;
 import com.hospital.lacurita.hospital.service.EspecialidadService;
