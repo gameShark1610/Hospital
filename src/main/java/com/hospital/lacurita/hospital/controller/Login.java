@@ -1,6 +1,7 @@
 package com.hospital.lacurita.hospital.controller;
 
 import com.hospital.lacurita.hospital.dto.LoginRequest;
+import com.hospital.lacurita.hospital.dto.LoginResponseDTO;
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
 import com.hospital.lacurita.hospital.model.Usuario;
 import com.hospital.lacurita.hospital.service.UserService;
@@ -73,7 +74,14 @@ public class Login {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             request.getSession(true).setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-            return ResponseEntity.ok("Login successful");
+            Usuario usuario = userService.findByUsername(username);
+
+            LoginResponseDTO response = new LoginResponseDTO(
+                    "Login successful",
+                    usuario.getTipoUsuario().getId()   // IMPORTANT: avoid returning the full entity
+            );
+
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }

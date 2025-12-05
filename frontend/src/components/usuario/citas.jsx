@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/citas.css"; // opcional: puedes crear este archivo y poner ahí tus estilos
+import "../../styles/usuario/citas.css"; // opcional: puedes crear este archivo y poner ahí tus estilos
 
 function Citas() {
   const [especialidades, setEspecialidades] = useState([]);

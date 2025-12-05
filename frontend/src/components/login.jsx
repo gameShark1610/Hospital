@@ -17,11 +17,24 @@ function Login() {
 
   // Verificar si ya hay sesión activa
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (isLoggedIn === "true") {
-      navigate("/citas");
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const userType = parseInt(localStorage.getItem("userType"));
+
+  if (isLoggedIn === "true") {
+    switch (userType) {
+      case 1: // Usuario
+        navigate("/usuario/citas");
+        break;
+      case 2: // Doctor
+        navigate("/doctor/panelDoctor");
+        break;
+      case 3: // Recepcionista
+        navigate("/recepcionista/PaginaRecepcionista");
+        break;
     }
-  }, [navigate]);
+  }
+}, [navigate]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,24 +73,30 @@ function Login() {
         throw new Error(errorData.message || "Credenciales inválidas");
       }
 
+      const data = await response.json();
       
       setSuccessMessage("¡Inicio de sesión exitoso!");
       
       // Guardar información en localStorage
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userEmail", formData.correo);
-      navigate("/citas");
- 
+      localStorage.setItem("userType", data.tipoUsuario); // Asumiendo que el backend devuelve 'tipo_usuario'
 
       // Redirigir según tipo de usuario
-      /*
       setTimeout(() => {
-        if (data.tipoUsuario === "doctor") {
-          navigate("/dashboard-doctor");
-        } else {
-          navigate("/citas");
+        switch (parseInt(data.tipoUsuario)) {
+          case 1: // Usuario
+            navigate("/usuario/citas");
+            break;
+          case 2: // Doctor
+            navigate("/doctor/panelDoctor");
+            break;
+          case 3: // Recepcionista
+            navigate("/recepcionista/PaginaRecepcionista");
+            break;
+          
         }
-      }, 1000);*/
+      }, 1000);
 
     } catch (error) {
       setErrorMessage(error.message || "Error al iniciar sesión. Verifica tus credenciales.");
