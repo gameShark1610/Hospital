@@ -1,8 +1,8 @@
 package com.hospital.lacurita.hospital.service;
 
-import com.hospital.lacurita.hospital.dto.CitaRequest;
-import com.hospital.lacurita.hospital.dto.CitaResponseDTO;
-import com.hospital.lacurita.hospital.dto.MisCitasResponseDTO;
+import com.hospital.lacurita.hospital.dto.Usuario.CitaRequest;
+import com.hospital.lacurita.hospital.dto.Usuario.CitaResponseDTO;
+import com.hospital.lacurita.hospital.dto.Usuario.MisCitasResponseDTO;
 import com.hospital.lacurita.hospital.model.Cita;
 import com.hospital.lacurita.hospital.model.Doctor;
 import com.hospital.lacurita.hospital.model.HorarioPreestablecido;
@@ -11,7 +11,6 @@ import com.hospital.lacurita.hospital.repository.CitaRepository;
 import com.hospital.lacurita.hospital.repository.DoctorRepository;
 import com.hospital.lacurita.hospital.repository.HorarioPreestablecidoRepository;
 import com.hospital.lacurita.hospital.repository.PacienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

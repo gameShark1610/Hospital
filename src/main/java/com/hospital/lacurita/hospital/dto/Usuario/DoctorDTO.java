@@ -1,4 +1,4 @@
-package com.hospital.lacurita.hospital.dto;
+package com.hospital.lacurita.hospital.dto.Usuario;
 
 import lombok.Data;
 

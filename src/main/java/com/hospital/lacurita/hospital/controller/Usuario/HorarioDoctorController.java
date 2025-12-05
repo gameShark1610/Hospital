@@ -1,6 +1,6 @@
 package com.hospital.lacurita.hospital.controller.Usuario;
 
-import com.hospital.lacurita.hospital.dto.HorariosRequest;
+import com.hospital.lacurita.hospital.dto.Usuario.HorariosRequest;
 import com.hospital.lacurita.hospital.service.HorarioPreestablecidoService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

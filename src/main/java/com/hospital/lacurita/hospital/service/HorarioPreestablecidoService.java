@@ -1,10 +1,7 @@
 package com.hospital.lacurita.hospital.service;
 
-import com.hospital.lacurita.hospital.dto.DoctorDTO;
-import com.hospital.lacurita.hospital.dto.HorariosRequest;
-import com.hospital.lacurita.hospital.model.HorarioPreestablecido;
+import com.hospital.lacurita.hospital.dto.Usuario.HorariosRequest;
 import com.hospital.lacurita.hospital.repository.HorarioPreestablecidoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

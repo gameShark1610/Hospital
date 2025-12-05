@@ -1,11 +1,8 @@
-package com.hospital.lacurita.hospital.dto;
+package com.hospital.lacurita.hospital.dto.Usuario;
 
 import lombok.Data;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
 
 @Data
 public class CitaRequest {

@@ -1,6 +1,6 @@
 package com.hospital.lacurita.hospital.service;
 
-import com.hospital.lacurita.hospital.dto.DoctorDTO;
+import com.hospital.lacurita.hospital.dto.Usuario.DoctorDTO;
 import com.hospital.lacurita.hospital.model.Paciente;
 import com.hospital.lacurita.hospital.repository.DoctorRepository;
 import com.hospital.lacurita.hospital.repository.PacienteRepository;

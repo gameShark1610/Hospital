@@ -1,7 +1,7 @@
 package com.hospital.lacurita.hospital.controller.Usuario;
 
 
-import com.hospital.lacurita.hospital.dto.DoctorDTO;
+import com.hospital.lacurita.hospital.dto.Usuario.DoctorDTO;
 import com.hospital.lacurita.hospital.service.DoctorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
