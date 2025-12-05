@@ -35,4 +35,8 @@ public class Persona {
     @Column(name = "FechaNacim", nullable = false)
     private LocalDate fechaNacim;
 
+    @NotNull
+    @Column(name = "Sexo", nullable = false)
+    private Boolean sexo;
+
 }

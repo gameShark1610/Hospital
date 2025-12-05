@@ -1,6 +1,7 @@
 package com.hospital.lacurita.hospital.service;
 
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
+import com.hospital.lacurita.hospital.dto.Usuario.UserPerfilDTO;
 import com.hospital.lacurita.hospital.model.Paciente;
 import com.hospital.lacurita.hospital.model.Persona;
 import com.hospital.lacurita.hospital.model.TipoUsuario;
@@ -18,6 +19,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 public class UserService {
@@ -109,6 +112,20 @@ public class UserService {
             }
         }
         return null;
+    }
+
+    public UserPerfilDTO obtenerPerfilUsuarioActual() {
+        Usuario usuario = userRepository.findById(obtenerUsuarioIdActual()).get();
+        UserPerfilDTO userPerfilDTO=new UserPerfilDTO();
+        userPerfilDTO.setNombre(usuario.getPersona().getNombre());
+        userPerfilDTO.setApellidos(usuario.getPersona().getPaterno()+" "+usuario.getPersona().getMaterno());
+        userPerfilDTO.setEmail(usuario.getUsuario());
+        userPerfilDTO.setFechaNacimiento(usuario.getPersona().getFechaNacim());
+        userPerfilDTO.setGenero(usuario.getPersona().getSexo() ? "Masculino" : "Femenino");
+
+        Paciente paciente = pacienteRepository.findByUsuarioId(usuario.getId()).orElse(null);
+        userPerfilDTO.setAltura(paciente.getHistorialMedico() != null ? paciente.getHistorialMedico().getEstatura() : new BigDecimal("0.0"));
+        return userPerfilDTO;
     }
 
 }

@@ -36,8 +36,10 @@ public class CitaService {
     }
 
     public List<MisCitasResponseDTO> obtenerMisCitas() {
+
         Integer idPaciente = userService.obtenerUsuarioIdActual();
-        List<Cita> citas = citaRepository.findByPacienteId(idPaciente);
+        Paciente paciente = pacienteRepository.findByUsuarioId(idPaciente).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        List<Cita> citas = citaRepository.findByPacienteId(paciente.getId());
         return citas.stream()
                 .map(this::convertToMisCitasResponseDTO)
                 .collect(Collectors.toList());
