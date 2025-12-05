@@ -159,8 +159,7 @@ function Citas() {
               href="#"
               className="navbar-link"
               onClick={(e) => {
-                e.preventDefault();
-                alert("Redirigiendo a Mi Perfil...");
+                e.preventDefault(); navigate("/usuario/perfil");
               }}
             >
               Mi Perfil

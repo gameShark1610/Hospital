@@ -218,7 +218,7 @@ function MisCitas() {
         <div className="navbar-container">
           <div className="navbar-logo">🏥 Hospital</div>
           <div className="navbar-menu">
-            <a href="#" className="navbar-link" onClick={(e) => { e.preventDefault(); navigate("/perfil"); }}>
+            <a href="#" className="navbar-link" onClick={(e) => { e.preventDefault(); navigate("/usuario/perfil"); }}>
               Mi Perfil
             </a>
             <a href="#" className="navbar-link active">
