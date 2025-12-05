@@ -4,6 +4,7 @@ import LoginForm from "./components/login";
 import Citas from "./components/usuario/citas";
 import Registro from "./components/registro";
 import PaginaRecepcionista from "./components/recepcionista/PaginaRecepcionista";
+import MisCitas from "./components/usuario/mis-citas";
 import "./App.css";
 
 //It checks if there’s a flag called "isLoggedIn" in localStorage. If the flag is present, it allows access to the protected route; otherwise, it redirects the user to the login page.
@@ -34,6 +35,15 @@ function App() {
           element={
             <ProtectedRoute>
               <PaginaRecepcionista />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/usuario/mis-citas"
+          element={
+            <ProtectedRoute>
+              <MisCitas />
             </ProtectedRoute>
           }
         />

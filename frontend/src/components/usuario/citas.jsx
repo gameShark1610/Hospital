@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/usuario/citas.css"; // opcional: puedes crear este archivo y poner ahí tus estilos
 
 function Citas() {
@@ -100,7 +101,7 @@ function Citas() {
   // Valida si todos los campos están completos
   const formularioValido =
     especialidad && doctor && fecha && hora && terms;
-
+  const navigate = useNavigate();
 
 
   // Función para enviar la cita al backend
@@ -169,7 +170,7 @@ function Citas() {
               className="navbar-link"
               onClick={(e) => {
                 e.preventDefault();
-                alert("Redirigiendo a Mis Citas...");
+                navigate("/usuario/mis-citas");
               }}
             >
               Mis Citas

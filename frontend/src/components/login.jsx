@@ -23,7 +23,7 @@ function Login() {
   if (isLoggedIn === "true") {
     switch (userType) {
       case 1: // Usuario
-        navigate("/usuario/citas");
+        navigate("/usuario/mis-citas");
         break;
       case 2: // Doctor
         navigate("/doctor/panelDoctor");
@@ -86,7 +86,7 @@ function Login() {
       setTimeout(() => {
         switch (parseInt(data.tipoUsuario)) {
           case 1: // Usuario
-            navigate("/usuario/citas");
+            navigate("/usuario/mis-citas");
             break;
           case 2: // Doctor
             navigate("/doctor/panelDoctor");
