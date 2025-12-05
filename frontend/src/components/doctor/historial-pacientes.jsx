@@ -1,0 +1,281 @@
+import React, { useState } from 'react';
+import '../../styles/doctor/historial_pacientes.css';
+
+const HistorialPacientes = () => {
+    const [searchId, setSearchId] = useState('');
+    const [showResults, setShowResults] = useState(false);
+    const [showNoResults, setShowNoResults] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedBitacora, setSelectedBitacora] = useState(null);
+
+    const pacienteData = {
+        id: 'P-12345',
+        nombre: 'Juan Pérez García',
+        edad: '35 años',
+        tipoSangre: 'O+',
+        telefono: '(555) 123-4567',
+        alergias: 'Penicilina',
+        totalConsultas: '12 visitas'
+    };
+
+    const bitacoraData = [
+        {
+            id: 'BIT-001',
+            fecha: '15 Nov 2025, 10:30 AM',
+            medico: 'Dr. Carlos Ramírez',
+            especialidad: 'Cardiología',
+            diagnostico: 'Hipertensión',
+            consultorio: 'Consultorio 3A',
+            motivo: 'Dolor de pecho y presión arterial elevada',
+            sintomas: 'Dolor torácico intermitente, mareos, presión arterial 140/90',
+            tratamiento: 'Enalapril 10mg - 1 tableta cada 24 horas. Control de presión arterial diaria. Dieta baja en sodio.',
+            notas: 'Paciente presenta hipertensión arterial grado 1. Se inicia tratamiento farmacológico y se recomienda seguimiento en 2 semanas. Importante control de peso y actividad física regular.'
+        },
+        {
+            id: 'BIT-002',
+            fecha: '1 Oct 2025, 2:00 PM',
+            medico: 'Dr. María González',
+            especialidad: 'Medicina General',
+            diagnostico: 'Revisión General',
+            consultorio: 'Consultorio 1B'
+        },
+        {
+            id: 'BIT-003',
+            fecha: '15 Ago 2025, 11:00 AM',
+            medico: 'Dr. Carlos Ramírez',
+            especialidad: 'Medicina General',
+            diagnostico: 'Faringitis',
+            consultorio: 'Consultorio 2A'
+        },
+        {
+            id: 'BIT-004',
+            fecha: '3 Jul 2025, 9:30 AM',
+            medico: 'Dr. Pedro Martínez',
+            especialidad: 'Traumatología',
+            diagnostico: 'Esguince de tobillo',
+            consultorio: 'Consultorio 4C'
+        },
+        {
+            id: 'BIT-005',
+            fecha: '20 Jun 2025, 3:45 PM',
+            medico: 'Dra. Ana Torres',
+            especialidad: 'Pediatría',
+            diagnostico: 'Control de rutina',
+            consultorio: 'Consultorio 5A'
+        }
+    ];
+
+    const buscarPaciente = () => {
+        if (searchId.trim() === '') {
+            alert('Por favor ingrese un ID de paciente');
+            return;
+        }
+
+        // Simular búsqueda - en producción se llamaría al backend
+        setShowResults(true);
+        setShowNoResults(false);
+    };
+
+    const verDetalle = (bitacora) => {
+        setSelectedBitacora(bitacora);
+        setShowModal(true);
+    };
+
+    const cerrarDetalle = () => {
+        setShowModal(false);
+        setSelectedBitacora(null);
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            buscarPaciente();
+        }
+    };
+
+    const getEspecialidadClass = (especialidad) => {
+        const classes = {
+            'Cardiología': 'badge-cardiologia',
+            'Medicina General': 'badge-general',
+            'Traumatología': 'badge-traumatologia',
+            'Pediatría': 'badge-pediatria'
+        };
+        return classes[especialidad] || 'badge-general';
+    };
+
+    return (
+        <div>
+            <nav className="navbar">
+                <div className="navbar-container">
+                    <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
+                    <div className="navbar-menu">
+                        <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
+                        <a href="/doctor/citas" className="navbar-link">Mis Citas</a>
+                        <a href="/doctor/historial-pacientes" className="navbar-link active">Historial Pacientes</a>
+                        <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
+                        <a href="/login" className="navbar-link logout">Cerrar Sesión</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div className="container">
+                <div className="page-header">
+                    <h1>📚 Historial de Pacientes - Bitácora</h1>
+                    <p>Busca el historial médico completo de un paciente por su ID</p>
+                    
+                    <div className="search-bar">
+                        <input 
+                            type="text" 
+                            value={searchId}
+                            onChange={(e) => setSearchId(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder="Ingrese el ID del paciente (Ej: P-12345)"
+                        />
+                        <button onClick={buscarPaciente}>🔍 Buscar</button>
+                    </div>
+                </div>
+
+                {showResults && (
+                    <div className="results-section">
+                        <div className="patient-info-header">
+                            <h2>👤 {pacienteData.nombre}</h2>
+                            <div className="patient-info-grid">
+                                <div className="info-item">
+                                    <strong>ID Paciente:</strong>
+                                    <span>{pacienteData.id}</span>
+                                </div>
+                                <div className="info-item">
+                                    <strong>Edad:</strong>
+                                    <span>{pacienteData.edad}</span>
+                                </div>
+                                <div className="info-item">
+                                    <strong>Tipo de Sangre:</strong>
+                                    <span>{pacienteData.tipoSangre}</span>
+                                </div>
+                                <div className="info-item">
+                                    <strong>Teléfono:</strong>
+                                    <span>{pacienteData.telefono}</span>
+                                </div>
+                                <div className="info-item">
+                                    <strong>Alergias:</strong>
+                                    <span>{pacienteData.alergias}</span>
+                                </div>
+                                <div className="info-item">
+                                    <strong>Total de Consultas:</strong>
+                                    <span>{pacienteData.totalConsultas}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 style={{ marginBottom: '15px', color: '#2c3e50' }}>📋 Registro de Bitácora</h3>
+
+                        <table className="bitacora-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Bitácora</th>
+                                    <th>Fecha Movimiento</th>
+                                    <th>Usuario (Médico)</th>
+                                    <th>Especialidad</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Consultorio</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {bitacoraData.map(bitacora => (
+                                    <tr key={bitacora.id}>
+                                        <td><strong>{bitacora.id}</strong></td>
+                                        <td>{bitacora.fecha}</td>
+                                        <td>{bitacora.medico}</td>
+                                        <td>
+                                            <span className={`badge ${getEspecialidadClass(bitacora.especialidad)}`}>
+                                                {bitacora.especialidad}
+                                            </span>
+                                        </td>
+                                        <td>{bitacora.diagnostico}</td>
+                                        <td>{bitacora.consultorio}</td>
+                                        <td>
+                                            <button 
+                                                className="btn-detail" 
+                                                onClick={() => verDetalle(bitacora)}
+                                            >
+                                                Ver Detalle
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {showNoResults && (
+                    <div className="results-section">
+                        <div className="no-results">
+                            <div className="no-results-icon">🔍</div>
+                            <h3>No se encontraron resultados</h3>
+                            <p>No existe ningún paciente con el ID ingresado</p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Modal Detalle Completo */}
+            <div className={`modal ${showModal ? 'show' : ''}`} onClick={cerrarDetalle}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h2>📋 Detalle de Consulta - {selectedBitacora?.id}</h2>
+                        <span className="close" onClick={cerrarDetalle}>&times;</span>
+                    </div>
+
+                    {selectedBitacora && (
+                        <>
+                            <div className="detail-section">
+                                <h3>Información de la Consulta</h3>
+                                <div className="detail-grid">
+                                    <p><strong>ID Bitácora:</strong> {selectedBitacora.id}</p>
+                                    <p><strong>Fecha:</strong> {selectedBitacora.fecha}</p>
+                                    <p><strong>Paciente:</strong> {pacienteData.nombre}</p>
+                                    <p><strong>ID Paciente:</strong> {pacienteData.id}</p>
+                                    <p><strong>Médico:</strong> {selectedBitacora.medico}</p>
+                                    <p><strong>Especialidad:</strong> {selectedBitacora.especialidad}</p>
+                                    <p><strong>Consultorio:</strong> {selectedBitacora.consultorio}</p>
+                                    <p><strong>Diagnóstico:</strong> {selectedBitacora.diagnostico}</p>
+                                </div>
+                            </div>
+
+                            {selectedBitacora.motivo && (
+                                <div className="detail-section">
+                                    <h3>Motivo de Consulta</h3>
+                                    <p>{selectedBitacora.motivo}</p>
+                                </div>
+                            )}
+
+                            {selectedBitacora.sintomas && (
+                                <div className="detail-section">
+                                    <h3>Síntomas</h3>
+                                    <p>{selectedBitacora.sintomas}</p>
+                                </div>
+                            )}
+
+                            {selectedBitacora.tratamiento && (
+                                <div className="detail-section">
+                                    <h3>Tratamiento Prescrito</h3>
+                                    <p>{selectedBitacora.tratamiento}</p>
+                                </div>
+                            )}
+
+                            {selectedBitacora.notas && (
+                                <div className="detail-section">
+                                    <h3>Notas del Médico</h3>
+                                    <p>{selectedBitacora.notas}</p>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default HistorialPacientes;

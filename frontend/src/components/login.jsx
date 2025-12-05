@@ -26,7 +26,7 @@ function Login() {
         navigate("/usuario/mis-citas");
         break;
       case 2: // Doctor
-        navigate("/doctor/panelDoctor");
+        navigate("/doctor/principalDoctor");
         break;
       case 3: // Recepcionista
         navigate("/recepcionista/PaginaRecepcionista");
