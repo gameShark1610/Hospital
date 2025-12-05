@@ -2,6 +2,7 @@ package com.hospital.lacurita.hospital.service;
 
 import com.hospital.lacurita.hospital.dto.CitaRequest;
 import com.hospital.lacurita.hospital.dto.CitaResponseDTO;
+import com.hospital.lacurita.hospital.dto.MisCitasResponseDTO;
 import com.hospital.lacurita.hospital.model.Cita;
 import com.hospital.lacurita.hospital.model.Doctor;
 import com.hospital.lacurita.hospital.model.HorarioPreestablecido;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CitaService {
@@ -31,6 +34,33 @@ public class CitaService {
         this.doctorRepository = doctorRepository;
         this.horarioRepository = horarioRepository;
     }
+
+    public List<MisCitasResponseDTO> obtenerMisCitas() {
+        Integer idPaciente = userService.obtenerUsuarioIdActual();
+        List<Cita> citas = citaRepository.findByPacienteId(idPaciente);
+        return citas.stream()
+                .map(this::convertToMisCitasResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private MisCitasResponseDTO convertToMisCitasResponseDTO(Cita cita) {
+        MisCitasResponseDTO dto = new MisCitasResponseDTO();
+        dto.setId(cita.getId());
+        dto.setEspecialidad(cita.getDoctor().getEspecialidad().getEspecialidad());
+        dto.setDoctor(cita.getDoctor().getEmpleado().getUsuario().getPersona().getNombre() + " " + cita.getDoctor().getEmpleado().getUsuario().getPersona().getPaterno());
+        dto.setFecha(cita.getFechaAgendada()); // Adjust date formatting as needed
+        dto.setHora(cita.getHorario().getHorarioIni().toString()); // Adjust time formatting as needed
+        dto.setConsultorio(cita.getDoctor().getConsultorio().getNumConsultorio().toString()); // Assuming there's a getConsultorio method
+        dto.setEstado(cita.getEstatus() ? "Confirmada" : "Pendiente");
+        // You might need to add logic for pricing, payment, etc.
+        dto.setPrecio(cita.getDoctor().getEspecialidad().getPrecio()); // Assuming there's a getTarifa method
+        dto.setPagado(cita.getEstatus()); // You'll need to implement payment tracking logic
+        dto.setFechaPago(cita.getFecha()); // Add payment date logic if applicable
+        dto.setNotas("null"); // Add notes logic if applicable
+
+        return dto;
+    }
+
 
     public CitaResponseDTO crearCita(CitaRequest citaRequest){
 

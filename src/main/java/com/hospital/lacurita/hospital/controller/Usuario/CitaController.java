@@ -18,8 +18,8 @@ public class CitaController {
 
     @GetMapping("/mis-Citas")
     public ResponseEntity<?> misCitas() {
+        return ResponseEntity.ok(citaService.obtenerMisCitas());
 
-        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/pagar")

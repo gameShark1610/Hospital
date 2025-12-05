@@ -22,7 +22,7 @@ function MisCitas() {
 
   const cargarCitas = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/citas", {
+      const response = await fetch("http://localhost:8080/Cita/mis-Citas", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -35,8 +35,24 @@ function MisCitas() {
       }
 
       const data = await response.json();
-      setCitas(data);
-      setCitasFiltradas(data);
+      console.log("Datos recibidos del backend:", data); // Debugging
+
+      if (Array.isArray(data)) {
+        setCitas(data);
+        setCitasFiltradas(data);
+      } else {
+        console.error("El formato de datos no es un array:", data);
+        // Intentar extraer si viene en una propiedad
+        if (data && Array.isArray(data.citas)) {
+           setCitas(data.citas);
+           setCitasFiltradas(data.citas);
+        } else {
+           // Si no es array ni tiene propiedad citas, mostrar error o array vacío
+           console.warn("No se pudieron interpretar los datos de citas");
+           setCitas([]);
+           setCitasFiltradas([]);
+        }
+      }
     } catch (error) {
       console.error("Error al cargar las citas:", error);
       
@@ -98,6 +114,7 @@ function MisCitas() {
       setCitasFiltradas(citasEjemplo);
     }
   };
+
 
   const filtrarCitas = (filtro) => {
     setFiltroActivo(filtro);
@@ -161,7 +178,10 @@ function MisCitas() {
   };
 
   const formatearFecha = (fechaStr) => {
+    if (!fechaStr) return { dia: "--", mes: "--", anio: "----", completa: "Fecha no disponible" };
     const fecha = new Date(fechaStr);
+    if (isNaN(fecha.getTime())) return { dia: "--", mes: "--", anio: "----", completa: "Fecha inválida" };
+
     return {
       dia: fecha.getDate(),
       mes: fecha.toLocaleDateString("es-MX", { month: "short" }),
@@ -372,9 +392,7 @@ function MisCitas() {
                     )}
                   </div>
 
-                  {renderAccionesCita(cita) && (
-                    <div className="appointment-actions">{renderAccionesCita(cita)}</div>
-                  )}
+                  <div className="appointment-actions">{renderAccionesCita(cita)}</div>
                 </div>
               );
             })
