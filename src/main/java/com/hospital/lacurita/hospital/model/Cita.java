@@ -27,7 +27,7 @@ public class Cita {
 
     @NotNull
     @Column(name = "Estatus", nullable = false)
-    private Boolean estatus = false;
+    private Integer estatus = 0;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

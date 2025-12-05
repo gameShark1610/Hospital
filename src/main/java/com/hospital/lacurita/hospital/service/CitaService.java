@@ -51,10 +51,26 @@ public class CitaService {
         dto.setFecha(cita.getFechaAgendada()); // Adjust date formatting as needed
         dto.setHora(cita.getHorario().getHorarioIni().toString()); // Adjust time formatting as needed
         dto.setConsultorio(cita.getDoctor().getConsultorio().getNumConsultorio().toString()); // Assuming there's a getConsultorio method
-        dto.setEstado(cita.getEstatus() ? "Confirmada" : "Pendiente");
+        switch (cita.getEstatus()) {
+            case 0:
+                dto.setEstado("pending");
+                dto.setPagado(false);
+                break;
+            case 1:
+                dto.setEstado("confirmed");
+                dto.setPagado(true);
+                break;
+            case 2:
+                dto.setEstado("completed");
+                dto.setPagado(true);
+                break;
+            case 3:
+                dto.setEstado("cancelled");
+                dto.setPagado(false);
+                break;
+        }
         // You might need to add logic for pricing, payment, etc.
         dto.setPrecio(cita.getDoctor().getEspecialidad().getPrecio()); // Assuming there's a getTarifa method
-        dto.setPagado(cita.getEstatus()); // You'll need to implement payment tracking logic
         dto.setFechaPago(cita.getFecha()); // Add payment date logic if applicable
         dto.setNotas("null"); // Add notes logic if applicable
 
@@ -75,7 +91,7 @@ public class CitaService {
         cita.setDoctor(doctor);
         cita.setPaciente(paciente);
         cita.setHorario(horario);
-        cita.setEstatus(false);
+        cita.setEstatus(0);
 
         Cita citaGuardada = citaRepository.save(cita);
         return convertToDTO(citaGuardada);
@@ -90,7 +106,7 @@ public class CitaService {
         dto.setPacienteId(cita.getPaciente().getId());
         dto.setDoctorId(cita.getDoctor().getId());
         dto.setHorarioId(cita.getHorario().getId());
-        dto.setEstatus(cita.getEstatus());
+        dto.setEstatus(0);
         return dto;
     }
 

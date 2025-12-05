@@ -9,7 +9,7 @@ public class CitaResponseDTO {
     private Integer id;
     private Instant fecha;
     private LocalDate fechaAgendada;
-    private Boolean estatus;
+    private Integer estatus;
     private Integer pacienteId;
     private Integer doctorId;
     private Integer horarioId;
