@@ -78,7 +78,16 @@ Sábados: 9:00 AM - 1:00 PM`
                         <a href="/doctor/citas" className="navbar-link">Mis Citas</a>
                         <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
                         <a href="/doctor/perfil" className="navbar-link active">Mi Perfil</a>
-                        <a href="#" onClick={handleLogout} className="navbar-link logout">
+                        <a href="#" onClick={(e) => {
+                e.preventDefault();
+                if (window.confirm("¿Cerrar sesión?")) {
+                  localStorage.removeItem("isLoggedIn");
+                  localStorage.removeItem("userEmail");
+                  localStorage.removeItem("token");
+                  alert("Sesión cerrada exitosamente");
+                  window.location.href = "/login";
+                }
+              }} className="navbar-link logout">
                             Cerrar Sesión
                         </a>
                     </div>

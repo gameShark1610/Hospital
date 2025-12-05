@@ -20,7 +20,7 @@ const PanelRecepcionista = () => {
             icono: '👥',
             titulo: 'Gestión de Usuarios',
             descripcion: 'Dar de alta y baja a doctores, pacientes y recepcionistas',
-            ruta: '/gestion-usuarios',
+            ruta: '/recepcionista/gestionarUsuarios',
             clase: 'usuarios'
         },
         {
@@ -97,7 +97,16 @@ const PanelRecepcionista = () => {
                     <div className="navbar-menu">
                         <a href="#" className="navbar-link active">Principal</a>
                         <a href="/perfil-recepcionista" className="navbar-link">Mi Perfil</a>
-                        <a href="#" onClick={handleLogout} className="navbar-link logout">
+                        <a href="#" onClick={(e) => {
+                e.preventDefault();
+                if (window.confirm("¿Cerrar sesión?")) {
+                  localStorage.removeItem("isLoggedIn");
+                  localStorage.removeItem("userEmail");
+                  localStorage.removeItem("token");
+                  alert("Sesión cerrada exitosamente");
+                  window.location.href = "/login";
+                }
+              }} className="navbar-link logout">
                             Cerrar Sesión
                         </a>
                     </div>
