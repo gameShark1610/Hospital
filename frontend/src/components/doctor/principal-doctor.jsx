@@ -60,9 +60,13 @@ const DashboardDoctor = () => {
                 <div className="navbar-container">
                     <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
                     <div className="navbar-menu">
-                        <a href="#" className="navbar-link active">Dashboard</a>
-                        <a href="/doctor/citas" className="navbar-link">Mis Citas</a>
+                        <a href="#" className="navbar-link active">Principal</a>
+                        <a href="/doctor/citas" className="navbar-link">Citas por atender</a>
                         <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
+                        <a href="/doctor/citas-agendar" className="navbar-link">
+                            Agendar Cita (Paciente)
+                        </a>
+                        <a href="/doctor/mis-citas" className="navbar-link">Mis Citas</a>
                         <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
                         <a href="#" onClick={(e) => {
                 e.preventDefault();

@@ -87,8 +87,12 @@ const CitasDoctor = () => {
                     <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
                     <div className="navbar-menu">
                         <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
-                        <a href="/doctor/citas" className="navbar-link active">Mis Citas</a>
+                        <a href="/doctor/citas" className="navbar-link active">Citas por atender</a>
                         <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
+                        <a href="/doctor/citas-agendar" className="navbar-link">
+                            Agendar Cita (Paciente)
+                        </a>
+                        <a href="/doctor/mis-citas" className="navbar-link">Mis Citas</a>
                         <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
                         <a href="/login" className="navbar-link logout">Cerrar Sesión</a>
                     </div>
@@ -97,7 +101,7 @@ const CitasDoctor = () => {
 
             <div className="container">
                 <div className="page-header">
-                    <h1>📋 Mis Citas</h1>
+                    <h1>📋 Citas Pendientes</h1>
                     <p>Gestiona tus consultas programadas</p>
                 </div>
 

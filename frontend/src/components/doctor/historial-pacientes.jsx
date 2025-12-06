@@ -109,8 +109,12 @@ const HistorialPacientes = () => {
                     <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
                     <div className="navbar-menu">
                         <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
-                        <a href="/doctor/citas" className="navbar-link">Mis Citas</a>
+                        <a href="/doctor/citas" className="navbar-link">Citas por atender</a>
                         <a href="/doctor/historial-pacientes" className="navbar-link active">Historial Pacientes</a>
+                        <a href="/doctor/citas-agendar" className="navbar-link">
+                            Agendar Cita (Paciente)
+                        </a>
+                        <a href="/doctor/mis-citas" className="navbar-link">Mis Citas</a>
                         <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
                         <a href="#" onClick={(e) => {
                 e.preventDefault();
