@@ -76,7 +76,7 @@ const PanelRecepcionista = () => {
             icono: '✅',
             titulo: 'Aprobar Cancelaciones',
             descripcion: 'Revisar y aprobar solicitudes de cancelación de citas',
-            ruta: '/aprobar-cancelaciones',
+            ruta: '/recepcionista/aprobar-cancelaciones',
             clase: 'cancelaciones'
         }
     ];
