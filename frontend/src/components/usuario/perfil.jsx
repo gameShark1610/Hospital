@@ -43,7 +43,7 @@ function Perfil() {
 
   const cargarDatosUsuario = async () => {
     try {
-      const response = await fetch("http://localhost:8080/Cita/miperfil", {
+      const response = await fetch("http://localhost:8080/usuario/miperfil", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
