@@ -8,15 +8,11 @@ import java.time.LocalDate;
 @Data
 public class UserPerfilDTO {
     String nombre;
-    String apellidos;
-    String email;
+    String apellidoPaterno;
+    String apellidoMaterno;
+    String correo;
     LocalDate fechaNacimiento;
     String genero;
-
-    //Datos medicos
-    String tipoSangre;
-    BigDecimal altura;
-    String alergias;
-    String enfermedadesCronicas;
+    String telefono;
 
 }

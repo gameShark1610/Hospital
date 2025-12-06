@@ -114,7 +114,7 @@ public class UserService {
         return null;
     }
 
-    public UserPerfilDTO obtenerPerfilUsuarioActual() {
+    /*public UserPerfilDTO obtenerPerfilUsuarioActual() {
         Usuario usuario = userRepository.findById(obtenerUsuarioIdActual()).get();
         UserPerfilDTO userPerfilDTO=new UserPerfilDTO();
         userPerfilDTO.setNombre(usuario.getPersona().getNombre());
@@ -126,6 +126,6 @@ public class UserService {
         Paciente paciente = pacienteRepository.findByUsuarioId(usuario.getId()).orElse(null);
         userPerfilDTO.setAltura(paciente.getHistorialMedico() != null ? paciente.getHistorialMedico().getEstatura() : new BigDecimal("0.0"));
         return userPerfilDTO;
-    }
+    }*/
 
 }

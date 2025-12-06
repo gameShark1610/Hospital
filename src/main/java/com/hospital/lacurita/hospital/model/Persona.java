@@ -39,4 +39,9 @@ public class Persona {
     @Column(name = "Sexo", nullable = false)
     private Boolean sexo;
 
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "Telefono", length = 50)
+    private String telefono;
+
 }

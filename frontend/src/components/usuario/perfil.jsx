@@ -8,12 +8,12 @@ function Perfil() {
   // Estados para información personal
   const [datosPersonales, setDatosPersonales] = useState({
     nombre: "",
-    apellidos: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
     email: "",
     fechaNacimiento: "",
     genero: "",
-    telefono: "",
-    direccion: ""
+    telefono: ""
   });
 
   // Estados para información médica
@@ -43,13 +43,13 @@ function Perfil() {
 
   const cargarDatosUsuario = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/perfil", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include"
-      });
+      const response = await fetch("http://localhost:8080/Cita/miperfil", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include"
+    });
 
       if (!response.ok) {
         throw new Error("Error al cargar los datos");
@@ -58,12 +58,12 @@ function Perfil() {
       const data = await response.json();
       setDatosPersonales({
         nombre: data.nombre || "",
-        apellidos: data.apellidos || "",
+        apellidoPaterno: data.apellidoPaterno || "",
+        apellidoMaterno: data.apellidoMaterno || "",
         email: data.email || localStorage.getItem("userEmail") || "",
         fechaNacimiento: data.fechaNacimiento || "",
         genero: data.genero || "",
         telefono: data.telefono || "",
-        direccion: data.direccion || ""
       });
 
       setDatosMedicos({
@@ -79,7 +79,8 @@ function Perfil() {
       const userEmail = localStorage.getItem("userEmail");
       setDatosPersonales({
         nombre: "Juan",
-        apellidos: "Pérez García",
+        apellidoPaterno: "Pérez",
+        apellidoMaterno: "García",
         email: userEmail || "juan.perez@ejemplo.com",
         fechaNacimiento: "1990-05-15",
         genero: "masculino",
@@ -250,21 +251,33 @@ function Perfil() {
                   required
                 />
               </div>
+              
+            </div>
+            <div className="form-row">
               <div className="form-group">
-                <label htmlFor="apellidos">Apellidos</label>
+                <label htmlFor="apellidoPaterno">Apellido Paterno</label>
                 <input
                   type="text"
-                  id="apellidos"
-                  name="apellidos"
-                  value={datosPersonales.apellidos}
+                  id="apellidoPaterno"
+                  name="apellidoPaterno"
+                  value={datosPersonales.apellidoPaterno}
                   onChange={handleChangePersonal}
                   disabled={!editandoPersonal}
                   required
                 />
               </div>
-            </div>
-
-            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="apellidoMaterno">Apellido Materno</label>
+                <input
+                  type="text"
+                  id="apellidoMaterno"
+                  name="apellidoMaterno"
+                  value={datosPersonales.apellidoMaterno}
+                  onChange={handleChangePersonal}
+                  disabled={!editandoPersonal}
+                  required
+                />
+              </div>
               <div className="form-group">
                 <label htmlFor="fechaNacimiento">Fecha de Nacimiento</label>
                 <input
@@ -317,24 +330,12 @@ function Perfil() {
                   name="email"
                   value={datosPersonales.email}
                   onChange={handleChangePersonal}
-                  disabled={!editandoPersonal}
+                  disabled={true}// El email no se puede editar
                   required
                 />
               </div>
             </div>
 
-            <div className="form-group full-width">
-              <label htmlFor="direccion">Dirección</label>
-              <input
-                type="text"
-                id="direccion"
-                name="direccion"
-                value={datosPersonales.direccion}
-                onChange={handleChangePersonal}
-                placeholder="Calle, Número, Colonia"
-                disabled={!editandoPersonal}
-              />
-            </div>
 
             <div className="button-group">
               {!editandoPersonal ? (
