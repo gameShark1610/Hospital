@@ -28,7 +28,7 @@ const PanelRecepcionista = () => {
             icono: '📅',
             titulo: 'Consultar y Administrar Citas',
             descripcion: 'Ver citas por médico, atendidas y pendientes',
-            ruta: '/consultar-citas-recepcionista',
+            ruta: '/recepcionista/consultar-citas',
             clase: 'citas'
         },
         {
@@ -36,7 +36,7 @@ const PanelRecepcionista = () => {
             icono: '🏢',
             titulo: 'Consultorios y Especialidades',
             descripcion: 'Registrar y gestionar consultorios y especialidades médicas',
-            ruta: '/gestion-consultorios',
+            ruta: '/recepcionista/gestion-consultorios',
             clase: 'consultorios'
         },
         {
@@ -44,7 +44,7 @@ const PanelRecepcionista = () => {
             icono: '💰',
             titulo: 'Servicios Extra y Tickets',
             descripcion: 'Venta de servicios, medicamentos y emisión de tickets',
-            ruta: '/gestion-servicios',
+            ruta: '/recepcionista/gestion-servicios',
             clase: 'servicios'
         },
         {
@@ -52,7 +52,7 @@ const PanelRecepcionista = () => {
             icono: '💊',
             titulo: 'Recetas Emitidas',
             descripcion: 'Consultar recetas por médico con detalles completos',
-            ruta: '/consultar-recetas',
+            ruta: '/recepcionista/consultar-recetas',
             clase: 'recetas'
         },
         {
@@ -60,7 +60,7 @@ const PanelRecepcionista = () => {
             icono: '📦',
             titulo: 'Inventario de Medicamentos',
             descripcion: 'Actualizar stock y gestionar medicamentos disponibles',
-            ruta: '/inventario-medicamentos',
+            ruta: '/recepcionista/inventario-medicamentos',
             clase: 'inventario'
         },
         {
@@ -68,11 +68,11 @@ const PanelRecepcionista = () => {
             icono: '📋',
             titulo: 'Consultar Bitácora',
             descripcion: 'Ver todos los movimientos y registros del sistema',
-            ruta: '/consultar-bitacora',
+            ruta: '/recepcionista/consultar-bitacora',
             clase: 'bitacora'
         },
         {
-            id: 'cancelaciones',
+            id: 'cancelaciones',    
             icono: '✅',
             titulo: 'Aprobar Cancelaciones',
             descripcion: 'Revisar y aprobar solicitudes de cancelación de citas',
@@ -96,7 +96,7 @@ const PanelRecepcionista = () => {
                     <div className="navbar-logo">🏥 Hospital - Panel Recepcionista</div>
                     <div className="navbar-menu">
                         <a href="#" className="navbar-link active">Principal</a>
-                        <a href="/perfil-recepcionista" className="navbar-link">Mi Perfil</a>
+                        <a href="/recepcionista/perfil" className="navbar-link">Mi Perfil</a>
                         <a href="#" onClick={(e) => {
                 e.preventDefault();
                 if (window.confirm("¿Cerrar sesión?")) {

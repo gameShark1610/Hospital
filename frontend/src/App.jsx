@@ -12,6 +12,12 @@ import DoctorCitas from "./components/doctor/citas";
 import HistorialPacientes from "./components/doctor/historial-pacientes";
 import PerfilDoctor from "./components/doctor/perfil-doctor";
 import GestionUsuario from "./components/recepcionista/gestion-usuarios"
+import ConsultarCitas from "./components/recepcionista/consultar-citas";
+import GestionConsultorios from "./components/recepcionista/gestion-consultorios";
+import GestionServicios from "./components/recepcionista/gestion-servicios";
+import ConsultarRecetas from "./components/recepcionista/consultar-recetas";
+import InventarioMedicamentos from "./components/recepcionista/inventario-medicamentos";
+import ConsultarBitacora from "./components/recepcionista/consultar_bitacora";
 import "./App.css";
 
 //It checks if there’s a flag called "isLoggedIn" in localStorage. If the flag is present, it allows access to the protected route; otherwise, it redirects the user to the login page.
@@ -47,10 +53,64 @@ function App() {
         />
 
         <Route
+          path="/recepcionista/consultar-bitacora"
+          element={
+            <ProtectedRoute>
+              <ConsultarBitacora />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recepcionista/inventario-medicamentos"
+          element={
+            <ProtectedRoute>
+              <InventarioMedicamentos />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recepcionista/consultar-recetas"
+          element={
+            <ProtectedRoute>
+              <ConsultarRecetas />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recepcionista/gestion-servicios"
+          element={
+            <ProtectedRoute>
+              <GestionServicios />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/doctor/historial-pacientes"
           element={
             <ProtectedRoute>
               <HistorialPacientes />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recepcionista/gestion-consultorios"
+          element={
+            <ProtectedRoute>
+              <GestionConsultorios />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recepcionista/consultar-citas"
+          element={
+            <ProtectedRoute>
+              <ConsultarCitas />
             </ProtectedRoute>
           }
         />
