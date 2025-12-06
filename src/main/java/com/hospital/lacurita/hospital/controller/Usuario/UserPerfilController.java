@@ -26,4 +26,9 @@ public class UserPerfilController {
         return ResponseEntity.ok(personaService.mostrarDatosUsuario());
     }
 
+    @GetMapping("/misDatosMedicos")
+    public ResponseEntity<?> misDatosMedicos() {
+        return ResponseEntity.ok(personaService.mostrarDatosMedicos());
+    }
+
 }

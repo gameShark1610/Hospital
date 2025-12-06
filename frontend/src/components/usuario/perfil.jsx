@@ -41,6 +41,35 @@ function Perfil() {
     cargarDatosUsuario();
   }, [navigate]);
 
+  const cargarDatosMedico = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/usuario/misDatosMedicos", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include"
+    });
+      if (!response.ok) {
+        throw new Error("Error al cargar los datos");
+      }
+
+      const data2 = await response.json();
+      setDatosMedicos({
+        tipoSangre: data2.tipoSangre || "",
+        altura: data2.altura || "",
+        alergias: data2.alergias || "",
+        enfermedadesCronicas: data2.pesos || ""
+      });
+
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+    }
+
+    
+    // Aquí podrías cargar datos médicos específicos si es necesario
+  }
+
   const cargarDatosUsuario = async () => {
     try {
       const response = await fetch("http://localhost:8080/usuario/miperfil", {
@@ -65,13 +94,7 @@ function Perfil() {
         genero: data.genero || "",
         telefono: data.telefono || "",
       });
-
-      setDatosMedicos({
-        tipoSangre: data.tipoSangre || "",
-        altura: data.altura || "",
-        alergias: data.alergias || "",
-        enfermedadesCronicas: data.enfermedadesCronicas || ""
-      });
+      await cargarDatosMedico();
     } catch (error) {
       console.error("Error al cargar datos:", error);
       
@@ -383,7 +406,7 @@ function Perfil() {
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="altura">Altura (cm)</label>
+                <label htmlFor="altura">Altura (m)</label>
                 <input
                   type="text"
                   id="altura"
@@ -394,11 +417,9 @@ function Perfil() {
                   disabled={!editandoMedico}
                 />
               </div>
-            </div>
-
-            <div className="form-group full-width">
+               <div className="form-group">
               <label htmlFor="alergias">Alergias</label>
-              <textarea
+              <input
                 id="alergias"
                 name="alergias"
                 value={datosMedicos.alergias}
@@ -407,18 +428,20 @@ function Perfil() {
                 disabled={!editandoMedico}
               />
             </div>
-
-            <div className="form-group full-width">
-              <label htmlFor="enfermedadesCronicas">Enfermedades Crónicas</label>
-              <textarea
+            <div className="form-group">
+              <label htmlFor="enfermedadesCronicas">Peso (Kg)</label>
+              <input
                 id="enfermedadesCronicas"
                 name="enfermedadesCronicas"
                 value={datosMedicos.enfermedadesCronicas}
                 onChange={handleChangeMedico}
-                placeholder="Diabetes, hipertensión, asma, etc."
+                placeholder="70"
                 disabled={!editandoMedico}
               />
             </div>
+            </div>
+
+           
 
             <div className="button-group">
               {!editandoMedico ? (
