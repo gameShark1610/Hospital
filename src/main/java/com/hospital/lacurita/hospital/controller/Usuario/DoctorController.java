@@ -31,4 +31,9 @@ public class DoctorController {
     public ResponseEntity<?> miPerfil() {
         return ResponseEntity.ok(doctorService.momostrarDatosDoctor());
     }
+
+    @GetMapping("/citasPendientes")
+    public ResponseEntity<?> miCitasPendientes() {
+        return ResponseEntity.ok(doctorService.getCitasDelDoctorActual());
+    }
 }

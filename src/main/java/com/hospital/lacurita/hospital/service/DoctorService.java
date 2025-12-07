@@ -1,5 +1,6 @@
 package com.hospital.lacurita.hospital.service;
 
+import com.hospital.lacurita.hospital.dto.Doctor.CitasPendientesDoctorDTO;
 import com.hospital.lacurita.hospital.dto.Doctor.DoctorDatosProfesionalDTO;
 import com.hospital.lacurita.hospital.dto.Usuario.DoctorDTO;
 import com.hospital.lacurita.hospital.dto.Usuario.UserPerfilDTO;
@@ -13,6 +14,8 @@ import com.hospital.lacurita.hospital.repository.PacienteRepository;
 import com.hospital.lacurita.hospital.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,6 +60,55 @@ public class DoctorService {
         doctorDatosProfesionalDTO.setConsultorio(doctor.getConsultorio().getNumConsultorio().toString());
 
         return doctorDatosProfesionalDTO;
+    }
+
+    public List<CitasPendientesDoctorDTO> getCitasDelDoctorActual() {
+        // 1. Get current Doctor ID
+        Integer usuarioID = userService.obtenerUsuarioIdActual();
+        Empleado empleado = empleadoRepository.findByUsuarioId(usuarioID)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+        Doctor doctor = doctorRepository.findByEmpleadoId(empleado.getId())
+                .orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
+
+        // 2. Fetch raw data as Object arrays
+        List<Object[]> results = doctorRepository.findCitasByDoctorId(doctor.getId());
+
+        // 3. Map Object[] to DTO manually
+        return results.stream()
+                .map(row -> {
+                    Integer estatusRaw = (Integer) row[6];
+                    CitasPendientesDoctorDTO dto = new CitasPendientesDoctorDTO(
+                            (Integer) row[0],        // DoctorId
+                            (String) row[1],         // NombreDoctor
+                            (String) row[2],         // NombrePaciente
+                            (Date) row[3],           // FechaAgendada
+                            (String) row[4],         // Horario
+                            (String) row[5],         // Telefono
+                             row[7].toString()         // NumConsultorio (Index 7)
+                    );
+
+                    if (estatusRaw != null) {
+                        switch (estatusRaw) {
+                            case 0:
+                                dto.setEstatus("pending");
+                                break;
+                            case 1:
+                                dto.setEstatus("confirmed");
+                                break;
+                            case 2:
+                                dto.setEstatus("completed");
+                                break;
+                            case 3:
+                                dto.setEstatus("cancelled");
+                                break;
+                            default:
+                                dto.setEstatus("unknown");
+                        }
+                    }
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
 

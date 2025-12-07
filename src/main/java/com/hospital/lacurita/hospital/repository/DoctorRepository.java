@@ -14,4 +14,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
 
     Optional<Doctor>  findByEmpleadoId(Integer id);
 
+    @Query(value = "SELECT * FROM CitasDoctor WHERE DoctorId = :doctorId", nativeQuery = true)
+    List<Object[]> findCitasByDoctorId(@Param("doctorId") Integer doctorId);
 }
