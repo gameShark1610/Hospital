@@ -36,6 +36,7 @@ public class PersonaService {
         userPerfilDTO.setApellidoMaterno(usuario.getPersona().getMaterno());
         userPerfilDTO.setFechaNacimiento(usuario.getPersona().getFechaNacim());
         userPerfilDTO.setTelefono(usuario.getPersona().getTelefono());
+        userPerfilDTO.setGenero(usuario.getPersona().getSexo() ? "masculino" : "femenino");
         return userPerfilDTO;
     }
 

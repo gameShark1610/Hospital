@@ -26,4 +26,9 @@ public class DoctorController {
         List<DoctorDTO> doctores = doctorService.getDoctoresPorEspecialidad(id);
         return ResponseEntity.ok(doctores);
     }
+
+    @GetMapping("/perfil")
+    public ResponseEntity<?> miPerfil() {
+        return ResponseEntity.ok(doctorService.momostrarDatosDoctor());
+    }
 }

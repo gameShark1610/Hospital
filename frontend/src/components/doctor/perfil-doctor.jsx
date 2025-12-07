@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/doctor/historial_pacientes.css';
 
@@ -12,19 +12,17 @@ const PerfilDoctor = () => {
     // Datos del doctor - estos vendrían del backend
     const [datosPersonales, setDatosPersonales] = useState({
         nombre: 'Alberto',
-        apellidos: 'García Martínez',
-        cedula: '12345678',
-        especialidad: 'Cardiología',
+        apellidoPaterno: 'García',
+        apellidoMaterno: 'Martínez',
         telefono: '(555) 111-2222',
         email: 'garcia.martinez@hospital.com'
     });
 
     const [datosProfesionales, setDatosProfesionales] = useState({
-        experiencia: '15 años',
-        consultorio: '301-A',
-        formacion: `Universidad Nacional Autónoma de México (UNAM) - Medicina General
-Hospital General de México - Especialidad en Cardiología
-Certificación del Consejo Mexicano de Cardiología`,
+        cedula: '',
+        curp: '',
+        especialidad: '',
+        consultorio: '',
         horario: `Lunes a Viernes: 8:00 AM - 4:00 PM
 Sábados: 9:00 AM - 1:00 PM`
     });
@@ -33,6 +31,82 @@ Sábados: 9:00 AM - 1:00 PM`
         pacientesAtendidos: 127,
         consultasRealizadas: 152
     };
+
+    
+     // Verificar sesión y cargar datos
+      useEffect(() => {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (!isLoggedIn || isLoggedIn !== "true") {
+          alert("Debes iniciar sesión para acceder a esta página");
+          navigate("/login");
+          return;
+        }
+    
+        cargarDatosUsuario();
+      }, [navigate]);
+
+      const cargarDatosMedico = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/doctores/perfil", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include"
+    });
+      if (!response.ok) {
+        throw new Error("Error al cargar los datos");
+      }
+
+      const data2 = await response.json();
+      setDatosProfesionales({
+        cedula: data2.cedula || "",
+        curp: data2.curp || "",
+        especialidad: data2.especialidad || "",
+        consultorio: data2.consultorio || "",
+        horario: data2.horario || "",
+      });
+
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+    }
+
+    
+    // Aquí podrías cargar datos médicos específicos si es necesario
+  }
+
+
+    
+      const cargarDatosUsuario = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/usuario/miperfil", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include"
+    });
+
+      if (!response.ok) {
+        throw new Error("Error al cargar los datos");
+      }
+
+      const data = await response.json();
+      setDatosPersonales({
+        nombre: data.nombre || "",
+        apellidoPaterno: data.apellidoPaterno || "",
+        apellidoMaterno: data.apellidoMaterno || "",
+        email: data.email || localStorage.getItem("userEmail") || "",
+        fechaNacimiento: data.fechaNacimiento || "",
+        genero: data.genero || "",
+        telefono: data.telefono || "",
+      });
+      await cargarDatosMedico();
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+    }
+  };
+      
 
     const handleEditPersonal = () => {
         if (isEditingPersonal) {
@@ -102,7 +176,7 @@ Sábados: 9:00 AM - 1:00 PM`
                 <div className="profile-header">
                     <div className="profile-avatar">👨‍⚕️</div>
                     <div className="profile-info">
-                        <h1>Dr. {datosPersonales.apellidos}</h1>
+                        <h1>Dr. {datosPersonales.apellidoPaterno+" "+datosPersonales.apellidoMaterno+ " "+datosPersonales.nombre}</h1>
                         <p>{datosPersonales.email}</p>
                     </div>
                 </div>
@@ -127,12 +201,26 @@ Sábados: 9:00 AM - 1:00 PM`
                                     disabled={!isEditingPersonal}
                                 />
                             </div>
+                        </div>
+
+                        <div className="form-row">
+                            
                             <div className="form-group">
-                                <label>Apellidos</label>
+                                <label>Apellido Paterno</label>
                                 <input 
                                     type="text" 
-                                    name="apellidos"
-                                    value={datosPersonales.apellidos}
+                                    name="apellidoPaterno"
+                                    value={datosPersonales.apellidoPaterno}
+                                    onChange={handleChangePersonal}
+                                    disabled={!isEditingPersonal}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Apellido Materno</label>
+                                <input 
+                                    type="text" 
+                                    name="apellidoMaterno"
+                                    value={datosPersonales.apellidoMaterno}
                                     onChange={handleChangePersonal}
                                     disabled={!isEditingPersonal}
                                 />
@@ -141,11 +229,11 @@ Sábados: 9:00 AM - 1:00 PM`
 
                         <div className="form-row">
                             <div className="form-group">
-                                <label>Cédula Profesional</label>
+                                <label>CURP</label>
                                 <input 
                                     type="text" 
                                     name="cedula"
-                                    value={datosPersonales.cedula}
+                                    value={datosProfesionales.curp}
                                     onChange={handleChangePersonal}
                                     disabled={!isEditingPersonal}
                                 />
@@ -155,7 +243,7 @@ Sábados: 9:00 AM - 1:00 PM`
                                 <input 
                                     type="text" 
                                     name="especialidad"
-                                    value={datosPersonales.especialidad}
+                                    value={datosProfesionales.especialidad}
                                     onChange={handleChangePersonal}
                                     disabled={!isEditingPersonal}
                                 />
@@ -185,24 +273,7 @@ Sábados: 9:00 AM - 1:00 PM`
                             </div>
                         </div>
 
-                        <div className="button-group">
-                            <button 
-                                type="button" 
-                                className="btn btn-primary"
-                                onClick={handleEditPersonal}
-                            >
-                                {isEditingPersonal ? 'Guardar' : 'Editar'}
-                            </button>
-                            {isEditingPersonal && (
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary"
-                                    onClick={() => setIsEditingPersonal(false)}
-                                >
-                                    Cancelar
-                                </button>
-                            )}
-                        </div>
+
                     </form>
                 </div>
 
@@ -213,11 +284,11 @@ Sábados: 9:00 AM - 1:00 PM`
                     <form>
                         <div className="form-row">
                             <div className="form-group">
-                                <label>Años de Experiencia</label>
+                                <label>Cédula Profesional</label>
                                 <input 
                                     type="text" 
-                                    name="experiencia"
-                                    value={datosProfesionales.experiencia}
+                                    name="cedula"
+                                    value={datosProfesionales.cedula}
                                     onChange={handleChangeProfesional}
                                     disabled={!isEditingProfesional}
                                 />
@@ -235,16 +306,6 @@ Sábados: 9:00 AM - 1:00 PM`
                         </div>
 
                         <div className="form-group full-width">
-                            <label>Formación Académica</label>
-                            <textarea 
-                                name="formacion"
-                                value={datosProfesionales.formacion}
-                                onChange={handleChangeProfesional}
-                                disabled={!isEditingProfesional}
-                            />
-                        </div>
-
-                        <div className="form-group full-width">
                             <label>Horario de Atención</label>
                             <textarea 
                                 name="horario"
@@ -254,24 +315,7 @@ Sábados: 9:00 AM - 1:00 PM`
                             />
                         </div>
 
-                        <div className="button-group">
-                            <button 
-                                type="button" 
-                                className="btn btn-primary"
-                                onClick={handleEditProfesional}
-                            >
-                                {isEditingProfesional ? 'Guardar' : 'Editar'}
-                            </button>
-                            {isEditingProfesional && (
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary"
-                                    onClick={() => setIsEditingProfesional(false)}
-                                >
-                                    Cancelar
-                                </button>
-                            )}
-                        </div>
+
                     </form>
                 </div>
 

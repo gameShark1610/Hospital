@@ -220,7 +220,7 @@ function MisCitas() {
                 <div className="navbar-container">
                     <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
                     <div className="navbar-menu">
-                        <a href="/doctor/principalDoctor" className="navbar-link">Dashboard</a>
+                        <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
                         <a href="/doctor/citas" className="navbar-link">Citas por atender</a>
                         <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
                         <a href="/doctor/citas-agendar" className="navbar-link">
