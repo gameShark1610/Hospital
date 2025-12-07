@@ -124,6 +124,15 @@ const CitasDoctor = () => {
         }
     };
 
+    const handleLogout = (e) => {
+        e.preventDefault();
+        if (window.confirm("¿Cerrar sesión?")) {
+            localStorage.clear();
+            alert("Sesión cerrada exitosamente");
+            window.location.href = "/login";
+        }
+    };
+
     return (
         <div>
             <nav className="navbar">
@@ -133,7 +142,10 @@ const CitasDoctor = () => {
                         <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
                         <a href="/doctor/citas" className="navbar-link active">Citas por atender</a>
                         <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
+                        <a href="/doctor/citas-agendar" className="navbar-link">Agendar Cita (Paciente)</a>
                         <a href="/doctor/mis-citas" className="navbar-link">Mis Citas</a>
+                        <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
+                        <a href="#" onClick={handleLogout} className="navbar-link logout">Cerrar Sesión</a>
                     </div>
                 </div>
             </nav>
