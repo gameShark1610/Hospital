@@ -89,7 +89,7 @@ const CitasDoctor = () => {
 
     const handleAtenderCita = (citaId) => {
         // window.location.href = `/atender-cita/${citaId}`;
-        navigate(`/atender-cita/${citaId}`);
+        navigate(`/doctor/atender`);
     };
 
     const handleVerHistorial = (citaId) => {
@@ -140,7 +140,7 @@ const CitasDoctor = () => {
                     <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
                     <div className="navbar-menu">
                         <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
-                        <a href="/doctor/atender" className="navbar-link active">Citas por atender</a>
+                        <a href="/doctor/citas" className="navbar-link active">Citas por atender</a>
                         <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
                         <a href="/doctor/citas-agendar" className="navbar-link">Agendar Cita (Paciente)</a>
                         <a href="/doctor/mis-citas" className="navbar-link">Mis Citas</a>
@@ -217,7 +217,7 @@ const CitasDoctor = () => {
                                         <>
                                             <button 
                                                 className="btn btn-primary"
-                                                onClick={() => handleAtenderCita(cita.doctorId)} // Ojo: ¿el ID de la cita es doctorId? Usualmente hay un citaId único.
+                                                onClick={() => handleAtenderCita(cita.citasId)} // Ojo: ¿el ID de la cita es doctorId? Usualmente hay un citaId único.
                                             >
                                                 Atender
                                             </button>

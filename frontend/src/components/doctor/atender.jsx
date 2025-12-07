@@ -7,6 +7,7 @@ const GenerarReceta = () => {
     ]);
     const [diagnostico, setDiagnostico] = useState('');
     const [duracion, setDuracion] = useState('');
+    const [observacion, setObservacion] = useState('');
 
     const addMedicamento = () => {
         const newId = medicamentos.length + 1;
@@ -37,18 +38,28 @@ const GenerarReceta = () => {
         });
     };
 
+    const handleLogout = (e) => {
+        e.preventDefault();
+        if (window.confirm("¿Cerrar sesión?")) {
+            localStorage.clear();
+            alert("Sesión cerrada exitosamente");
+            window.location.href = "/login";
+        }
+    };
+
     return (
         <div>
             <nav className="navbar">
                 <div className="navbar-container">
                     <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
                     <div className="navbar-menu">
-                        <a href="/dashboard-doctor" className="navbar-link">Principal</a>
-                        <a href="/consultar-citas-doctor" className="navbar-link">Mis Citas</a>
-                        <a href="/historial-pacientes" className="navbar-link">Historial Pacientes</a>
-                        <a href="/citas" className="navbar-link agendar-paciente">📅 Agendar Cita (Paciente)</a>
-                        <a href="/perfil-doctor" className="navbar-link">Mi Perfil</a>
-                        <a href="/login" className="navbar-link logout">Cerrar Sesión</a>
+                        <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
+                        <a href="/doctor/citas" className="navbar-link active">Citas por atender</a>
+                        <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
+                        <a href="/doctor/citas-agendar" className="navbar-link">Agendar Cita (Paciente)</a>
+                        <a href="/doctor/mis-citas" className="navbar-link">Mis Citas</a>
+                        <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
+                        <a href="#" onClick={handleLogout} className="navbar-link logout">Cerrar Sesión</a>
                     </div>
                 </div>
             </nav>
@@ -66,7 +77,6 @@ const GenerarReceta = () => {
                     <div className="patient-info-box">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
-                                <strong>ID Paciente:</strong> P-12345<br />
                                 <strong>Paciente:</strong> Juan Pérez García<br />
                                 <strong>Consulta:</strong> Consulta General - 10:00 AM
                             </div>
@@ -109,6 +119,19 @@ const GenerarReceta = () => {
                                 required
                             />
                         </div>
+
+                        <div className="form-group">
+                            <label>Observación <span className="required">*</span></label>
+                            <textarea 
+                                value={observacion}
+                                onChange={(e) => setObservacion(e.target.value)}
+                                placeholder="Describa la observación del paciente"
+                                required
+                            />
+                        </div>
+
+                    
+                    
                     </div>
 
                     {/* Medicamentos y Tratamiento */}
@@ -147,6 +170,19 @@ const GenerarReceta = () => {
                                             required
                                         />
                                     </div>
+                                    <div className="form-group">
+                                        <label>Duración <span className="required">*</span></label>
+                                        <input 
+                                            type="text" 
+                                            value={duracion}
+                                            onChange={(e) => setDuracion(e.target.value)}
+                                            placeholder="Ej: 7 días, 2 semanas, 1 mes"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="alert alert-info">
+                            <strong>ℹ️ Nota:</strong> Asegúrese de especificar claramente la duración total del tratamiento.
+                        </div>
                                 </div>
                             ))}
                         </div>
@@ -154,26 +190,6 @@ const GenerarReceta = () => {
                         <button type="button" className="btn btn-add" onClick={addMedicamento}>
                             + Agregar Medicamento
                         </button>
-                    </div>
-
-                    {/* Duración del Tratamiento */}
-                    <div className="form-section">
-                        <h2 className="section-title">⏱️ Duración del Tratamiento</h2>
-
-                        <div className="form-group">
-                            <label>Duración <span className="required">*</span></label>
-                            <input 
-                                type="text" 
-                                value={duracion}
-                                onChange={(e) => setDuracion(e.target.value)}
-                                placeholder="Ej: 7 días, 2 semanas, 1 mes"
-                                required
-                            />
-                        </div>
-
-                        <div className="alert alert-info">
-                            <strong>ℹ️ Nota:</strong> Asegúrese de especificar claramente la duración total del tratamiento.
-                        </div>
                     </div>
 
                     {/* Botones de Acción */}
