@@ -3,14 +3,8 @@ package com.hospital.lacurita.hospital.service;
 import com.hospital.lacurita.hospital.dto.Usuario.CitaRequest;
 import com.hospital.lacurita.hospital.dto.Usuario.CitaResponseDTO;
 import com.hospital.lacurita.hospital.dto.Usuario.MisCitasResponseDTO;
-import com.hospital.lacurita.hospital.model.Cita;
-import com.hospital.lacurita.hospital.model.Doctor;
-import com.hospital.lacurita.hospital.model.HorarioPreestablecido;
-import com.hospital.lacurita.hospital.model.Paciente;
-import com.hospital.lacurita.hospital.repository.CitaRepository;
-import com.hospital.lacurita.hospital.repository.DoctorRepository;
-import com.hospital.lacurita.hospital.repository.HorarioPreestablecidoRepository;
-import com.hospital.lacurita.hospital.repository.PacienteRepository;
+import com.hospital.lacurita.hospital.model.*;
+import com.hospital.lacurita.hospital.repository.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +20,15 @@ public class CitaService {
     private final UserService userService;
     private final DoctorRepository doctorRepository;
     private final HorarioPreestablecidoRepository horarioRepository;
+    private final EstatusRepository estatusRepository;
 
-    public CitaService(CitaRepository citaRepository, PacienteRepository pacienteRepository, UserService userService, DoctorRepository doctorRepository, HorarioPreestablecidoRepository horarioRepository) {
+    public CitaService(CitaRepository citaRepository, PacienteRepository pacienteRepository, UserService userService, DoctorRepository doctorRepository, HorarioPreestablecidoRepository horarioRepository, EstatusRepository estatusRepository) {
         this.citaRepository = citaRepository;
         this.pacienteRepository = pacienteRepository;
         this.userService = userService;
         this.doctorRepository = doctorRepository;
         this.horarioRepository = horarioRepository;
+        this.estatusRepository = estatusRepository;
     }
 
     public List<MisCitasResponseDTO> obtenerMisCitas() {
@@ -53,7 +49,7 @@ public class CitaService {
         dto.setFecha(cita.getFechaAgendada()); // Adjust date formatting as needed
         dto.setHora(cita.getHorario().getHorarioIni().toString()); // Adjust time formatting as needed
         dto.setConsultorio(cita.getDoctor().getConsultorio().getNumConsultorio().toString()); // Assuming there's a getConsultorio method
-        switch (cita.getEstatus()) {
+        switch (cita.getEstatus().getId()-1) {
             case 0:
                 dto.setEstado("pending");
                 dto.setPagado(false);
@@ -82,10 +78,9 @@ public class CitaService {
     public ResponseEntity<?> actualizarEstatus(Integer idCita) {
         Cita cita = citaRepository.findById(idCita)
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-
-        cita.setEstatus(1);
+        Estatus estatus = estatusRepository.findById(2).orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
+        cita.setEstatus(estatus);
         citaRepository.save(cita);
-
         return ResponseEntity.ok("Estatus actualizado");
     }
 
@@ -97,6 +92,7 @@ public class CitaService {
         Paciente paciente = pacienteRepository.findByUsuarioId(idPaciente).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
         Doctor doctor= doctorRepository.findById(citaRequest.getDoctorId()).orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
         HorarioPreestablecido horario = horarioRepository.findById(citaRequest.getHorarioId()).orElseThrow(() -> new RuntimeException("Horario no encontrado"));
+        Estatus estatus = estatusRepository.findById(1).orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
 
         Cita cita = new Cita();
         cita.setFecha(Instant.now());
@@ -104,7 +100,7 @@ public class CitaService {
         cita.setDoctor(doctor);
         cita.setPaciente(paciente);
         cita.setHorario(horario);
-        cita.setEstatus(0);
+        cita.setEstatus(estatus);
 
         Cita citaGuardada = citaRepository.save(cita);
         return convertToDTO(citaGuardada);

@@ -119,27 +119,6 @@ const PanelRecepcionista = () => {
                     <p>Panel de Administración - Recepción Hospital</p>
                 </div>
 
-                {/* Estadísticas Rápidas */}
-                <h2 className="section-title">📊 Estadísticas del Día</h2>
-                <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-number">{estadisticas.citasHoy}</div>
-                        <div className="stat-label">Citas de Hoy</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-number">{estadisticas.pendientes}</div>
-                        <div className="stat-label">Pendientes</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-number">{estadisticas.cancelaciones}</div>
-                        <div className="stat-label">Cancelaciones</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-number">{estadisticas.pacientesActivos}</div>
-                        <div className="stat-label">Pacientes Activos</div>
-                    </div>
-                </div>
-
                 {/* Funciones Principales */}
                 <h2 className="section-title">⚙️ Funciones Administrativas</h2>
                 <div className="cards-grid">

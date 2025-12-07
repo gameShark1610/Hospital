@@ -25,9 +25,13 @@ public class Cita {
     @Column(name = "FechaAgendada", nullable = false)
     private LocalDate fechaAgendada;
 
+    @Column(name = "PoliticaDevolucion")
+    private Integer politicaDevolucion;
+
     @NotNull
-    @Column(name = "Estatus", nullable = false)
-    private Integer estatus = 0;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "EstatusId", nullable = false)
+    private Estatus estatus;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

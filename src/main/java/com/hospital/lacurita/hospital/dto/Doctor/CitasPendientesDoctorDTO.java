@@ -8,6 +8,7 @@ import java.util.Date;
 @Data
 public class CitasPendientesDoctorDTO {
     private Integer doctorId;
+    private Integer citasId;
     private String nombreDoctor;
     private String nombrePaciente;
     private Date fechaAgendada;

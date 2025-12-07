@@ -87,8 +87,10 @@ public class DoctorService {
                              row[7].toString()         // NumConsultorio (Index 7)
                     );
 
+                    dto.setCitasId((Integer)  row[8]);
+
                     if (estatusRaw != null) {
-                        switch (estatusRaw) {
+                        switch (estatusRaw-1) {
                             case 0:
                                 dto.setEstatus("pending");
                                 break;
