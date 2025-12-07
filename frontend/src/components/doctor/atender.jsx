@@ -81,15 +81,39 @@ const GenerarReceta = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         
+        // Construimos el objeto JSON
         const datosReceta = {
             citaId: citaData.citasId, 
             pacienteId: citaData.pacienteId,
-            medicamentos: medicamentosReceta, // Lista de medicamentos con sus tratamientos y duraciones
-            fecha: fechaHoy
+            diagnostico: diagnostico,
+            observacion: observacion,
+            fecha: fechaHoy,
+            // Esta lista debe coincidir con MedicamentoDTO en Java
+            medicamentos: medicamentosReceta.map(item => ({
+                medicamentoId: item.medicamentoId, // El ID del select
+                tratamiento: item.tratamiento,
+                duracion: item.duracion
+            }))
         };
 
-        console.log("Enviando al backend:", datosReceta);
-        // Aquí tu fetch POST ...
+        // Fetch al endpoint
+        fetch("http://localhost:8080/api/doctores/guardarReceta", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include", // include the session cookie
+            body: JSON.stringify(datosReceta) // Convertimos a JSON string
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Receta guardada con éxito");
+                navigate('/doctor/citas'); // Redirigir al terminar
+            } else {
+                alert("Error al guardar");
+            }
+        })
+        .catch(error => console.error("Error:", error));
     };
 
     const handleLogout = (e) => {
