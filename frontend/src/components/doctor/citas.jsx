@@ -87,9 +87,9 @@ const CitasDoctor = () => {
         };
     };
 
-    const handleAtenderCita = (citaId) => {
+    const handleAtenderCita = (cita) => {
         // window.location.href = `/atender-cita/${citaId}`;
-        navigate(`/doctor/atender`);
+        navigate(`/doctor/atender`,{state: { citaData: cita }});
     };
 
     const handleVerHistorial = (citaId) => {
@@ -217,7 +217,7 @@ const CitasDoctor = () => {
                                         <>
                                             <button 
                                                 className="btn btn-primary"
-                                                onClick={() => handleAtenderCita(cita.citasId)} // Ojo: ¿el ID de la cita es doctorId? Usualmente hay un citaId único.
+                                                onClick={() => handleAtenderCita(cita)} // Ojo: ¿el ID de la cita es doctorId? Usualmente hay un citaId único.
                                             >
                                                 Atender
                                             </button>

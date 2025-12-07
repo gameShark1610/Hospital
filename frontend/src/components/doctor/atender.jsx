@@ -1,41 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom'; 
 import '../../styles/doctor/atender.css';
 
 const GenerarReceta = () => {
-    const [medicamentos, setMedicamentos] = useState([
-        { id: 1, nombre: '', tratamiento: '' }
-    ]);
-    const [diagnostico, setDiagnostico] = useState('');
-    const [duracion, setDuracion] = useState('');
-    const [observacion, setObservacion] = useState('');
+    const location = useLocation();
+    const navigate = useNavigate();
+    
+    // Recuperamos los datos enviados
+    const { citaData } = location.state || {};
 
+    // 1. ESTADO: Catálogo de medicamentos (viene de la BD)
+    const [listaMedicamentos, setListaMedicamentos] = useState([]);
+
+    // 2. ESTADO: Filas de la receta (lo que el doctor edita)
+    // Nota: Agregamos 'medicamentoId' y movimos 'duracion' aquí dentro
+    const [medicamentosReceta, setMedicamentosReceta] = useState([
+        { id: 1, medicamentoId: "", tratamiento: "", duracion: "" }
+    ]);
+
+    const [diagnostico, setDiagnostico] = useState('');
+    const [observacion, setObservacion] = useState('');
+    const [fechaHoy, setFechaHoy] = useState('');
+
+    // Validación de entrada y fecha
+    useEffect(() => {
+        if (!citaData) {
+            alert("No se ha seleccionado ninguna cita. Redirigiendo...");
+            navigate('/doctor/citas');
+            return;
+        }
+        const hoy = new Date().toISOString().split('T')[0];
+        setFechaHoy(hoy);
+    }, [citaData, navigate]);
+
+    // Carga de medicamentos desde el Backend
+    useEffect(() => {
+        fetch("http://localhost:8080/medicamentos", {
+          credentials: "include", 
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Error HTTP: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+              // Guardamos en la lista del catálogo, NO sobrescribimos la receta
+              setListaMedicamentos(data);
+          })
+          .catch((error) => console.error("Error al cargar medicamentos:", error));
+      }, []);
+
+    if (!citaData) return <div>Cargando datos del paciente...</div>;
+
+    // Agregar nueva fila vacía
     const addMedicamento = () => {
-        const newId = medicamentos.length + 1;
-        setMedicamentos([...medicamentos, { id: newId, nombre: '', tratamiento: '' }]);
+        const newId = medicamentosReceta.length + 1;
+        setMedicamentosReceta([
+            ...medicamentosReceta, 
+            { id: newId, medicamentoId: "", tratamiento: "", duracion: "" }
+        ]);
     };
 
+    // Eliminar fila
     const removeMedicamento = (id) => {
-        if (medicamentos.length > 1) {
-            setMedicamentos(medicamentos.filter(med => med.id !== id));
+        if (medicamentosReceta.length > 1) {
+            setMedicamentosReceta(medicamentosReceta.filter(med => med.id !== id));
         } else {
             alert('Debe haber al menos un medicamento en la receta.');
         }
     };
 
-    const handleMedicamentoChange = (id, field, value) => {
-        setMedicamentos(medicamentos.map(med => 
-            med.id === id ? { ...med, [field]: value } : med
+    // Manejar cambios en los inputs de la tabla (Select, Tratamiento, Duración)
+    const handleMedicamentoChange = (rowId, field, value) => {
+        setMedicamentosReceta(medicamentosReceta.map(row => 
+            row.id === rowId ? { ...row, [field]: value } : row
         ));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Aquí se enviaría la información al backend
-        console.log({
-            diagnostico,
-            medicamentos,
-            duracion
-        });
+        
+        const datosReceta = {
+            citaId: citaData.citasId, 
+            pacienteId: citaData.pacienteId,
+            medicamentos: medicamentosReceta, // Lista de medicamentos con sus tratamientos y duraciones
+            fecha: fechaHoy
+        };
+
+        console.log("Enviando al backend:", datosReceta);
+        // Aquí tu fetch POST ...
     };
 
     const handleLogout = (e) => {
@@ -77,37 +131,36 @@ const GenerarReceta = () => {
                     <div className="patient-info-box">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
-                                <strong>Paciente:</strong> Juan Pérez García<br />
-                                <strong>Consulta:</strong> Consulta General - 10:00 AM
+                                <strong>Paciente:</strong> {citaData.nombrePaciente}<br />
+                                <strong>Horario:</strong> {citaData.horario} - Consultorio {citaData.numConsultorio}
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    {/* Datos de la Receta */}
                     <div className="form-section">
                         <h2 className="section-title">📋 Datos de la Receta</h2>
 
                         <div className="form-row">
                             <div className="form-group">
-                                <label>Número de Receta <span className="required">*</span></label>
-                                <input type="text" disabled value="REC-12345" />
+                                <label>Número de Receta</label>
+                                <input type="text" disabled value={citaData.citasId} />
                             </div>
                             <div className="form-group">
                                 <label>Fecha <span className="required">*</span></label>
-                                <input type="date" disabled value="2025-12-02" />
+                                <input type="date" disabled value={fechaHoy} />
                             </div>
                         </div>
 
                         <div className="form-group">
-                            <label>Nombre del Paciente <span className="required">*</span></label>
-                            <input type="text" value="Juan Pérez García" disabled />
+                            <label>Nombre del Paciente</label>
+                            <input type="text" value={citaData.nombrePaciente} disabled />
                         </div>
 
                         <div className="form-group">
-                            <label>Nombre del Médico <span className="required">*</span></label>
-                            <input type="text" value="Dr. Carlos Ramírez" disabled />
+                            <label>Nombre del Médico</label>
+                            <input type="text" value={citaData.nombreDoctor || "Dr. Asignado"} disabled />
                         </div>
 
                         <div className="form-group">
@@ -121,17 +174,14 @@ const GenerarReceta = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Observación <span className="required">*</span></label>
+                            <label>Observación General <span className="required">*</span></label>
                             <textarea 
                                 value={observacion}
                                 onChange={(e) => setObservacion(e.target.value)}
-                                placeholder="Describa la observación del paciente"
+                                placeholder="Describa la observación general (ej: reposo, dieta...)"
                                 required
                             />
                         </div>
-
-                    
-                    
                     </div>
 
                     {/* Medicamentos y Tratamiento */}
@@ -139,50 +189,59 @@ const GenerarReceta = () => {
                         <h2 className="section-title">💊 Medicamentos y Tratamiento</h2>
 
                         <div id="medicamentosContainer">
-                            {medicamentos.map((medicamento, index) => (
-                                <div key={medicamento.id} className="medicamento-item">
+                            {medicamentosReceta.map((fila, index) => (
+                                <div key={fila.id} className="medicamento-item">
                                     <div className="medicamento-header">
                                         <span className="medicamento-number">Medicamento {index + 1}</span>
                                         <button 
                                             type="button"
                                             className="btn-remove" 
-                                            onClick={() => removeMedicamento(medicamento.id)}
+                                            onClick={() => removeMedicamento(fila.id)}
                                         >
                                             Eliminar
                                         </button>
                                     </div>
+
+                                    {/* 1. SELECCIÓN DE MEDICAMENTO */}
                                     <div className="form-group">
                                         <label>Medicamento <span className="required">*</span></label>
-                                        <input 
-                                            type="text" 
-                                            placeholder="Ej: Paracetamol 500mg"
-                                            value={medicamento.nombre}
-                                            onChange={(e) => handleMedicamentoChange(medicamento.id, 'nombre', e.target.value)}
+                                        <select 
+                                            value={fila.medicamentoId}
+                                            onChange={(e) => handleMedicamentoChange(fila.id, 'medicamentoId', e.target.value)}
                                             required
-                                        />
+                                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                                        >
+                                            <option value="">-- Seleccione Medicamento --</option>
+                                            {listaMedicamentos.map((med) => (
+                                                <option key={med.id} value={med.id}>
+                                                    {med.nombreMed}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
+
+                                    {/* 2. TRATAMIENTO */}
                                     <div className="form-group">
                                         <label>Tratamiento (Dosis e indicaciones) <span className="required">*</span></label>
                                         <textarea 
-                                            placeholder="Ej: 1 tableta cada 8 horas por 5 días. Tomar con alimentos."
-                                            value={medicamento.tratamiento}
-                                            onChange={(e) => handleMedicamentoChange(medicamento.id, 'tratamiento', e.target.value)}
+                                            placeholder="Ej: 1 tableta cada 8 horas. Tomar con alimentos."
+                                            value={fila.tratamiento}
+                                            onChange={(e) => handleMedicamentoChange(fila.id, 'tratamiento', e.target.value)}
                                             required
                                         />
                                     </div>
+
+                                    {/* 3. DURACIÓN INDIVIDUAL */}
                                     <div className="form-group">
                                         <label>Duración <span className="required">*</span></label>
                                         <input 
                                             type="text" 
-                                            value={duracion}
-                                            onChange={(e) => setDuracion(e.target.value)}
-                                            placeholder="Ej: 7 días, 2 semanas, 1 mes"
+                                            value={fila.duracion}
+                                            onChange={(e) => handleMedicamentoChange(fila.id, 'duracion', e.target.value)}
+                                            placeholder="Ej: 7 días, 2 semanas"
                                             required
                                         />
                                     </div>
-                                    <div className="alert alert-info">
-                            <strong>ℹ️ Nota:</strong> Asegúrese de especificar claramente la duración total del tratamiento.
-                        </div>
                                 </div>
                             ))}
                         </div>
@@ -192,7 +251,6 @@ const GenerarReceta = () => {
                         </button>
                     </div>
 
-                    {/* Botones de Acción */}
                     <div className="form-section">
                         <div className="action-buttons">
                             <button type="submit" className="btn btn-primary">Generar Receta</button>
