@@ -13,7 +13,9 @@ function Registro() {
     nombre: "",
     paterno: "",
     materno: "",
-    fechaNac: ""
+    fechaNac: "",
+    sexo: "",
+    telefono: ""
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -58,11 +60,13 @@ function Registro() {
     const dataToSend = {
       correo: formData.correo,
       password: formData.password,
-      tipoUsuarioId: parseInt(formData.tipoUsuario, 10),
+      tipoUsuarioId: 1,
       nombre: formData.nombre,
       paterno: formData.paterno,
       materno: formData.materno,
-      fechaNacim: formData.fechaNac
+      fechaNacim: formData.fechaNac,
+      sexo: formData.sexo,
+      telefono: formData.telefono
     };
 
     try {
@@ -121,20 +125,6 @@ function Registro() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="tipoUsuario">Tipo de Usuario</label>
-            <select
-              id="tipoUsuario"
-              name="tipoUsuario"
-              value={formData.tipoUsuario}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Selecciona tipo de usuario</option>
-              <option value="1">Paciente</option>
-              <option value="2">Doctor</option>
-            </select>
-          </div>
 
           <div className="form-row">
             <div className="form-group">
@@ -151,6 +141,23 @@ function Registro() {
             </div>
 
             <div className="form-group">
+              <label htmlFor="telefono">Telefono</label>
+              <input
+                type="text"
+                id="telefono"
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                placeholder="555-1234"
+                required
+              />
+            </div>
+
+
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
               <label htmlFor="paterno">Apellido Paterno</label>
               <input
                 type="text"
@@ -162,32 +169,49 @@ function Registro() {
                 required
               />
             </div>
+            <div className="form-group">
+              <label htmlFor="materno">Apellido Materno</label>
+              <input
+                type="text"
+                id="materno"
+                name="materno"
+                value={formData.materno}
+                onChange={handleChange}
+                placeholder="García"
+                required
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="materno">Apellido Materno</label>
-            <input
-              type="text"
-              id="materno"
-              name="materno"
-              value={formData.materno}
-              onChange={handleChange}
-              placeholder="García"
-              required
-            />
-          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="fechaNac">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                id="fechaNac"
+                name="fechaNac"
+                value={formData.fechaNac}
+                onChange={handleChange}
+                max={getFechaMaxima()}
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="fechaNac">Fecha de Nacimiento</label>
-            <input
-              type="date"
-              id="fechaNac"
-              name="fechaNac"
-              value={formData.fechaNac}
-              onChange={handleChange}
-              max={getFechaMaxima()}
-              required
-            />
+            <div className="form-group">
+              <label htmlFor="sexo">Sexo</label>
+              <select
+                id="sexo"
+                name="sexo"
+                value={formData.sexo}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Selecciona sexo</option>
+                {/* CORRECCIÓN AQUÍ: El value debe ser el texto que espera Java */}
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+              </select>
+            </div>
           </div>
 
           <div className="form-group">

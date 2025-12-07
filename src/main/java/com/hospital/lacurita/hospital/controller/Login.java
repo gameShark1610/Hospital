@@ -15,6 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,17 +32,18 @@ public class Login {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            Usuario registeredUser = userService.register(registerRequest);
-            return ResponseEntity.ok(registeredUser);
+            // 2. CAMBIO: Llamamos al método nuevo dentro de UserService
+            userService.register(request);
+
+            // Retornamos éxito simple
+            return ResponseEntity.ok(Collections.singletonMap("message", "Usuario registrado exitosamente"));
+
         } catch (RuntimeException e) {
-            // This will catch the specific "Email already registered" exception
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("message", e.getMessage()));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("message", "Registration failed: " + e.getMessage()));
+            return ResponseEntity.internalServerError().body(Collections.singletonMap("message", "Error interno del servidor"));
         }
     }
 

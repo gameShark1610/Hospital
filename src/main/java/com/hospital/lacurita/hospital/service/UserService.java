@@ -48,36 +48,37 @@ public class UserService {
     }
 
     @Transactional
-    public Usuario register(RegisterRequest registerRequest) {
-        Persona persona = new Persona();
-        persona.setNombre(registerRequest.getNombre());
-        persona.setPaterno(registerRequest.getPaterno());
-        persona.setMaterno(registerRequest.getMaterno());
-        persona.setFechaNacim(registerRequest.getFechaNacim());
+    public void register(RegisterRequest registerRequest) {
 
-        personaRepository.save(persona);
-
-        // Check if user already exists
+        // 1. Validar si el usuario ya existe (Buena práctica hacerlo antes de llamar a BD)
         if (userRepository.findByUsuario(registerRequest.getCorreo()).isPresent()) {
-            throw new RuntimeException("Email already registered");
+            throw new RuntimeException("El correo ya está registrado");
         }
 
-        // Get TipoUsuario
-        TipoUsuario tipoUsuario = tipoUsuarioRepository.findById(registerRequest.getTipoUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Invalid user type"));
+        // 2. Encriptar la contraseña (El SP espera el string ya encriptado)
+        String passwordEncriptada = passwordEncoder.encode(registerRequest.getPassword());
 
-        // Create new user
-        Usuario user = new Usuario();
-        user.setUsuario(registerRequest.getCorreo());
-        user.setContraseña(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setTipoUsuario(tipoUsuario);
-        user.setPersona(persona);
-        userRepository.save(user);
-        //Create kind of user
-        createTipoUsuario(tipoUsuario, user);
+        // 3. Convertir el Sexo (String) a ID (int) para el SP
+        // Asumiendo: 1 = Masculino, 0 = Femenino. Ajusta según tu lógica.
+        int sexoId = 0;
+        if (registerRequest.getSexo() != null &&
+                (registerRequest.getSexo().equalsIgnoreCase("Masculino") || registerRequest.getSexo().equalsIgnoreCase("M"))) {
+            sexoId = 1;
+        }
 
-        return user;
-    }
+        // 4. Llamar al Stored Procedure mediante el Repositorio JPA
+        userRepository.registrarUsuarioSp(
+                registerRequest.getCorreo(),
+                passwordEncriptada,
+                registerRequest.getNombre(),
+                registerRequest.getPaterno(),
+                registerRequest.getMaterno(),
+                registerRequest.getFechaNacim(),
+                registerRequest.getTipoUsuarioId(),
+                sexoId,
+                registerRequest.getTelefono()
+        );
+}
 
     public void createTipoUsuario(TipoUsuario tipoUsuario, Usuario user) {
         switch (tipoUsuario.getId()){

@@ -16,4 +16,6 @@ public class RegisterRequest {
     private String paterno;
     private String materno;
     private LocalDate fechaNacim;
+    private String sexo;
+    private String telefono;
 }
