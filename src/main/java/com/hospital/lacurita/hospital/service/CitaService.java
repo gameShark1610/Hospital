@@ -71,6 +71,10 @@ public class CitaService {
                 dto.setEstado("cancelled");
                 dto.setPagado(false);
                 break;
+            case 4:
+                dto.setEstado("to cancel");
+                dto.setPagado(false); // Assuming not paid or refund needed, logic can be adjusted
+                break;
         }
         // You might need to add logic for pricing, payment, etc.
         dto.setPrecio(cita.getDoctor().getEspecialidad().getPrecio()); // Assuming there's a getTarifa method
@@ -93,7 +97,7 @@ public class CitaService {
     public ResponseEntity<?> cancelarCita(Integer idCita) {
         Cita cita = citaRepository.findById(idCita)
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-        // Assuming 4 is "Cancelada" based on user request
+        // 4 is "Cancelada"
         Estatus estatus = estatusRepository.findById(4)
                 .orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
 
@@ -105,7 +109,19 @@ public class CitaService {
 
         cita.setEstatus(estatus);
         citaRepository.save(cita);
-        return ResponseEntity.ok("Cita cancelada correctamente");
+        return ResponseEntity.ok("Cita cancelada exitosamente");
+    }
+
+    public ResponseEntity<?> solicitarCancelacionDoctor(Integer idCita) {
+        Cita cita = citaRepository.findById(idCita)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        // 5 is "Por cancelar"
+        Estatus estatus = estatusRepository.findById(5)
+                .orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
+
+        cita.setEstatus(estatus);
+        citaRepository.save(cita);
+        return ResponseEntity.ok("Solicitud de cancelación enviada");
     }
 
     public CitaResponseDTO crearCita(CitaRequest citaRequest) {

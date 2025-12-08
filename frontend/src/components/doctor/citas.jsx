@@ -39,21 +39,21 @@ const CitasDoctor = () => {
             }
 
             const data = await response.json();
-            console.log("Datos recibidos del backend:", data); 
-            
+            console.log("Datos recibidos del backend:", data);
+
             setCitas(data);
         } catch (error) {
             console.error("Error al cargar las citas:", error);
             // Puedes dejar un estado vacío o mostrar un error en UI
-            setCitas([]); 
+            setCitas([]);
         }
     };
 
     // Lógica de filtrado basada en el estado "citas" (ya no en la constante estática)
     const getFilteredCitas = () => {
         return citas.filter(cita => {
-            if (activeTab === 'todas') return cita.estatus === 'confirmed' || cita.estatus === 'completed' || cita.estatus === 'cancelled';
-            
+            if (activeTab === 'todas') return cita.estatus === 'confirmed' || cita.estatus === 'completed' || cita.estatus === 'cancelled' || cita.estatus === 'to cancel';
+
             // Lógica para "Hoy"
             if (activeTab === 'hoy') {
                 const hoy = new Date().toISOString().split('T')[0]; // "2025-12-06"
@@ -77,9 +77,9 @@ const CitasDoctor = () => {
     const formatFecha = (fechaString) => {
         if (!fechaString) return { dia: '--', mes: '--', anno: '--' };
         // Crear fecha asegurando zona horaria correcta o split simple
-        const [year, month, day] = fechaString.split('-'); 
+        const [year, month, day] = fechaString.split('-');
         const dateObj = new Date(year, month - 1, day);
-        
+
         return {
             dia: day,
             mes: dateObj.toLocaleString('es-ES', { month: 'short' }), // 'nov'
@@ -89,7 +89,7 @@ const CitasDoctor = () => {
 
     const handleAtenderCita = (cita) => {
         // window.location.href = `/atender-cita/${citaId}`;
-        navigate(`/doctor/atender`,{state: { citaData: cita }});
+        navigate(`/doctor/atender`, { state: { citaData: cita } });
     };
 
     const handleVerHistorial = (citaId) => {
@@ -99,27 +99,46 @@ const CitasDoctor = () => {
     const handleCancelar = (citaId) => {
         if (window.confirm('¿Está seguro que desea cancelar esta cita?')) {
             console.log('Cancelar cita ID:', citaId);
-            // Aquí agregarías el fetch DELETE o PUT para cancelar
+            fetch(`http://localhost:8080/api/doctores/cancelar/${citaId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'accept': '*/*'
+                },
+                credentials: 'include',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Solicitud de cancelación enviada');
+                        // Recargar citas para ver cambios
+                        cargarCitas();
+                    } else {
+                        alert('Error al cancelar la cita');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
     };
 
     // Ajustado a los valores en Inglés que retorna tu API
     const getStatusClass = (estado) => {
-        switch(estado) {
+        switch (estado) {
             case 'pending': return 'status-pendiente'; // Asegúrate que en CSS exista esta clase
             case 'confirmed': return 'status-confirmada';
             case 'completed': return 'status-completada';
             case 'cancelled': return 'status-cancelada'; // Agrega estilo rojo en CSS si no existe
+            case 'to cancel': return 'status-cancelada';
             default: return '';
         }
     };
 
     const getStatusText = (estado) => {
-        switch(estado) {
+        switch (estado) {
             case 'pending': return 'Pendiente';
             case 'confirmed': return 'Confirmada';
             case 'completed': return 'Completada';
             case 'cancelled': return 'Cancelada';
+            case 'to cancel': return 'Por cancelar';
             default: return estado;
         }
     };
@@ -157,25 +176,25 @@ const CitasDoctor = () => {
                 </div>
 
                 <div className="filter-tabs">
-                    <button 
+                    <button
                         className={`tab-btn ${activeTab === 'todas' ? 'active' : ''}`}
                         onClick={() => setActiveTab('todas')}
                     >
                         Todas
                     </button>
-                    <button 
+                    <button
                         className={`tab-btn ${activeTab === 'hoy' ? 'active' : ''}`}
                         onClick={() => setActiveTab('hoy')}
                     >
                         Hoy
                     </button>
-                    <button 
+                    <button
                         className={`tab-btn ${activeTab === 'pendientes' ? 'active' : ''}`}
                         onClick={() => setActiveTab('pendientes')}
                     >
                         Pendientes
                     </button>
-                    <button 
+                    <button
                         className={`tab-btn ${activeTab === 'completadas' ? 'active' : ''}`}
                         onClick={() => setActiveTab('completadas')}
                     >
@@ -184,8 +203,8 @@ const CitasDoctor = () => {
                 </div>
 
                 <div className="citas-grid">
-                    {filteredCitas.length === 0 && <p style={{textAlign:'center', width:'100%'}}>No hay citas para mostrar.</p>}
-                    
+                    {filteredCitas.length === 0 && <p style={{ textAlign: 'center', width: '100%' }}>No hay citas para mostrar.</p>}
+
                     {filteredCitas.map(cita => {
                         const fechaObj = formatFecha(cita.fechaAgendada);
                         return (
@@ -203,8 +222,8 @@ const CitasDoctor = () => {
                                     {/* Mapeo correcto de las propiedades del JSON */}
                                     <h3>{cita.nombrePaciente}</h3>
                                     {/* Tu API no devuelve 'tipo' de consulta, puedes poner un default o pedirlo al back */}
-                                    <p>Consulta General</p> 
-                                    
+                                    <p>Consulta General</p>
+
                                     <div className="cita-detalles">
                                         <span>🕐 {cita.horario}</span>
                                         <span>🏥 Cons. {cita.numConsultorio}</span>
@@ -213,21 +232,21 @@ const CitasDoctor = () => {
                                 </div>
 
                                 <div className="cita-actions">
-                                    {cita.estatus !== 'completed' && cita.estatus !== 'cancelled' && (
+                                    {cita.estatus !== 'completed' && cita.estatus !== 'cancelled' && cita.estatus !== 'to cancel' && (
                                         <>
-                                            <button 
+                                            <button
                                                 className="btn btn-primary"
                                                 onClick={() => handleAtenderCita(cita)} // Ojo: ¿el ID de la cita es doctorId? Usualmente hay un citaId único.
                                             >
                                                 Atender
                                             </button>
-                                            <button 
+                                            <button
                                                 className="btn btn-secondary"
                                                 onClick={() => handleVerHistorial(cita.doctorId)}
                                             >
                                                 Historial
                                             </button>
-                                            <button 
+                                            <button
                                                 className="btn btn-cancel"
                                                 onClick={() => handleCancelar(cita.doctorId)}
                                             >
@@ -235,8 +254,8 @@ const CitasDoctor = () => {
                                             </button>
                                         </>
                                     )}
-                                    {(cita.estatus === 'completed' || cita.estatus === 'cancelled') && (
-                                        <button 
+                                    {(cita.estatus === 'completed' || cita.estatus === 'cancelled' || cita.estatus === 'to cancel') && (
+                                        <button
                                             className="btn btn-secondary"
                                             onClick={() => handleVerHistorial(cita.doctorId)}
                                         >

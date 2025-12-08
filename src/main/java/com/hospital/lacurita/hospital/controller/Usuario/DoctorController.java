@@ -2,6 +2,7 @@ package com.hospital.lacurita.hospital.controller.Usuario;
 
 import com.hospital.lacurita.hospital.dto.Doctor.RecetaDTO;
 import com.hospital.lacurita.hospital.dto.Usuario.DoctorDTO;
+import com.hospital.lacurita.hospital.service.CitaService;
 import com.hospital.lacurita.hospital.service.DoctorService;
 import com.hospital.lacurita.hospital.service.RecetaService;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,12 @@ public class DoctorController {
 
     private final DoctorService doctorService;
     private final RecetaService recetaService;
+    private final CitaService citaService;
 
-    public DoctorController(DoctorService doctorService, RecetaService recetaService) {
+    public DoctorController(DoctorService doctorService, RecetaService recetaService, CitaService citaService) {
         this.doctorService = doctorService;
         this.recetaService = recetaService;
+        this.citaService = citaService;
     }
 
     @GetMapping("/especialidad/{id}")
@@ -66,5 +69,10 @@ public class DoctorController {
     public ResponseEntity<com.hospital.lacurita.hospital.dto.Doctor.HistorialPacienteDTO> getHistorial(
             @PathVariable Integer pacienteId) {
         return ResponseEntity.ok(doctorService.getHistorialPaciente(pacienteId));
+    }
+
+    @PostMapping("/cancelar/{id}")
+    public ResponseEntity<?> solicitarCancelacionDoctor(@PathVariable Integer id) {
+        return citaService.solicitarCancelacionDoctor(id);
     }
 }

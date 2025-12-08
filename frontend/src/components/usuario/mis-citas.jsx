@@ -157,7 +157,8 @@ function MisCitas() {
       confirmed: "Confirmada",
       pending: "Pendiente",
       cancelled: "Cancelada",
-      completed: "Completada"
+      completed: "Completada",
+      "to cancel": "Por cancelar"
     };
     return textos[estado] || estado;
   };
@@ -182,8 +183,8 @@ function MisCitas() {
     const fechaCita = new Date(cita.fecha);
     const esProxima = fechaCita >= hoy;
 
-    // No mostrar acciones para citas completadas o canceladas
-    if (cita.estado === "completed" || cita.estado === "cancelled") {
+    // No mostrar acciones para citas completadas o canceladas o por cancelar
+    if (cita.estado === "completed" || cita.estado === "cancelled" || cita.estado === "to cancel") {
       return null;
     }
 

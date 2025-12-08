@@ -40,7 +40,7 @@ function MisCitas() {
       setCitasFiltradas(data);
     } catch (error) {
       console.error("Error al cargar las citas:", error);
-      
+
       // Datos de ejemplo para pruebas (eliminar cuando la API esté lista)
       const citasEjemplo = [
         {
@@ -123,8 +123,8 @@ function MisCitas() {
   };
 
   const irAPagar = (cita) => {
-  navigate("/usuario/pagar", { state: { cita } });
-};
+    navigate("/usuario/pagar", { state: { cita } });
+  };
 
   const cancelarCita = async (citaId) => {
     if (!window.confirm("¿Estás seguro de que deseas cancelar esta cita?")) {
@@ -132,8 +132,8 @@ function MisCitas() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/api/citas/${citaId}/cancelar`, {
-        method: "PUT",
+      const response = await fetch(`http://localhost:8080/Cita/cancelar/${citaId}`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
@@ -157,7 +157,8 @@ function MisCitas() {
       confirmed: "Confirmada",
       pending: "Pendiente",
       cancelled: "Cancelada",
-      completed: "Completada"
+      completed: "Completada",
+      "to cancel": "Por cancelar"
     };
     return textos[estado] || estado;
   };
@@ -182,8 +183,8 @@ function MisCitas() {
     const fechaCita = new Date(cita.fecha);
     const esProxima = fechaCita >= hoy;
 
-    // No mostrar acciones para citas completadas o canceladas
-    if (cita.estado === "completed" || cita.estado === "cancelled") {
+    // No mostrar acciones para citas completadas o canceladas o por cancelar
+    if (cita.estado === "completed" || cita.estado === "cancelled" || cita.estado === "to cancel") {
       return null;
     }
 
@@ -217,32 +218,32 @@ function MisCitas() {
     <>
       {/* Navbar */}
       <nav className="navbar">
-                <div className="navbar-container">
-                    <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
-                    <div className="navbar-menu">
-                        <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
-                        <a href="/doctor/citas" className="navbar-link">Citas por atender</a>
-                        <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
-                        <a href="/doctor/citas-agendar" className="navbar-link">
-                            Agendar Cita (Paciente)
-                        </a>
-                        <a href="/doctor/mis-citas" className="navbar-link active">Mis Citas</a>
-                        <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
-                        <a href="#" onClick={(e) => {
-                e.preventDefault();
-                if (window.confirm("¿Cerrar sesión?")) {
-                  localStorage.removeItem("isLoggedIn");
-                  localStorage.removeItem("userEmail");
-                  localStorage.removeItem("token");
-                  alert("Sesión cerrada exitosamente");
-                  window.location.href = "/login";
-                }
-              }} className="navbar-link logout">
-                            Cerrar Sesión
-                        </a>
-                    </div>
-                </div>
-            </nav>
+        <div className="navbar-container">
+          <div className="navbar-logo">🏥 Hospital - Panel Doctor</div>
+          <div className="navbar-menu">
+            <a href="/doctor/principalDoctor" className="navbar-link">Principal</a>
+            <a href="/doctor/citas" className="navbar-link">Citas por atender</a>
+            <a href="/doctor/historial-pacientes" className="navbar-link">Historial Pacientes</a>
+            <a href="/doctor/citas-agendar" className="navbar-link">
+              Agendar Cita (Paciente)
+            </a>
+            <a href="/doctor/mis-citas" className="navbar-link active">Mis Citas</a>
+            <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
+            <a href="#" onClick={(e) => {
+              e.preventDefault();
+              if (window.confirm("¿Cerrar sesión?")) {
+                localStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("userEmail");
+                localStorage.removeItem("token");
+                alert("Sesión cerrada exitosamente");
+                window.location.href = "/login";
+              }
+            }} className="navbar-link logout">
+              Cerrar Sesión
+            </a>
+          </div>
+        </div>
+      </nav>
 
       {/* Contenido */}
       <div className="container">
