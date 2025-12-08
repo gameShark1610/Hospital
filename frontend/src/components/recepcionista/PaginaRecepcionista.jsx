@@ -24,14 +24,6 @@ const PanelRecepcionista = () => {
             clase: 'usuarios'
         },
         {
-            id: 'citas',
-            icono: '📅',
-            titulo: 'Consultar y Administrar Citas',
-            descripcion: 'Ver citas por médico, atendidas y pendientes',
-            ruta: '/recepcionista/consultar-citas',
-            clase: 'citas'
-        },
-        {
             id: 'consultorios',
             icono: '🏢',
             titulo: 'Consultorios y Especialidades',
@@ -46,14 +38,6 @@ const PanelRecepcionista = () => {
             descripcion: 'Venta de servicios, medicamentos y emisión de tickets',
             ruta: '/recepcionista/gestion-servicios',
             clase: 'servicios'
-        },
-        {
-            id: 'recetas',
-            icono: '💊',
-            titulo: 'Recetas Emitidas',
-            descripcion: 'Consultar recetas por médico con detalles completos',
-            ruta: '/recepcionista/consultar-recetas',
-            clase: 'recetas'
         },
         {
             id: 'inventario',

@@ -113,4 +113,34 @@ public class DoctorService {
                 .collect(Collectors.toList());
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public void eliminarDoctor(Integer doctorId) {
+        doctorRepository.eliminarDoctorSp(doctorId);
+    }
+
+    public List<DoctorDTO> buscarDoctores(String query) {
+        List<Object[]> results = doctorRepository.buscarPorIdONombre(query);
+        return results.stream()
+                .map(row -> {
+                    // d.DoctorId, p.Nombre, p.Paterno, p.Materno, e.Especialidad, c.NumConsultorio
+                    Integer id = (Integer) row[0];
+                    String nombre = row[1] + " " + row[2] + " " + (row[3] != null ? row[3] : "");
+                    String especialidad = (String) row[4];
+                    String consultorio = row[5].toString();
+
+                    // Reusing DoctorDTO but maybe I should create a new DTO or extend it if I want
+                    // to show more info
+                    // The existing DoctorDTO has (id, nombre). Let's stick to it or make a new one
+                    // 'DoctorSearchResultDTO'.
+                    // For now, let's put "Especialidad - Consultorio" in the name field for quick
+                    // display or just return basic info.
+                    // Wait, the frontend needs to show this info.
+                    // Let's assume DoctorDTO logic.
+                    // return new DoctorDTO(id, nombre + " (" + especialidad + ") - " +
+                    // consultorio);
+                    return new DoctorDTO(id, nombre, especialidad, consultorio);
+                })
+                .collect(Collectors.toList());
+    }
+
 }

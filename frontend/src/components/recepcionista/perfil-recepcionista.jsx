@@ -8,13 +8,37 @@ const PerfilRecepcionista = () => {
 
     // Datos de la recepcionista - vendrían del backend
     const [datosRecepcionista, setDatosRecepcionista] = useState({
-        nombreCompleto: 'Ana García López',
-        numeroEmpleado: 'REC-2024-001',
-        email: 'ana.garcia@hospital.com',
-        telefono: '(555) 987-6543',
-        fechaNacimiento: '20 de Junio, 1995',
-        fechaIngreso: '15 de Enero, 2024'
+        nombreCompleto: '',
+        numeroEmpleado: '',
+        email: '',
+        telefono: '',
+        fechaNacimiento: '',
+        fechaIngreso: 'Desconocida', // No database field for this yet
+        curp: '',
+        numeroExtension: ''
     });
+
+    React.useEffect(() => {
+        const fetchPerfil = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/recepcionista/perfil', {
+                    credentials: "include"
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setDatosRecepcionista({
+                        ...data,
+                        fechaIngreso: 'Desconocida' // Keep default or remove if not needed
+                    });
+                } else {
+                    console.error("Error fetching profile");
+                }
+            } catch (error) {
+                console.error("Error connecting to server:", error);
+            }
+        };
+        fetchPerfil();
+    }, []);
 
     const handleLogout = () => {
         navigate('/login');
@@ -50,15 +74,15 @@ const PerfilRecepcionista = () => {
                         <a href="/recepcionista/paginaRecepcionista" className="navbar-link">Principal</a>
                         <a href="/recepcionista/perfil" className="navbar-link active">Mi Perfil</a>
                         <a href="#" onClick={(e) => {
-                e.preventDefault();
-                if (window.confirm("¿Cerrar sesión?")) {
-                  localStorage.removeItem("isLoggedIn");
-                  localStorage.removeItem("userEmail");
-                  localStorage.removeItem("token");
-                  alert("Sesión cerrada exitosamente");
-                  window.location.href = "/login";
-                }
-              }} className="navbar-link logout">
+                            e.preventDefault();
+                            if (window.confirm("¿Cerrar sesión?")) {
+                                localStorage.removeItem("isLoggedIn");
+                                localStorage.removeItem("userEmail");
+                                localStorage.removeItem("token");
+                                alert("Sesión cerrada exitosamente");
+                                window.location.href = "/login";
+                            }
+                        }} className="navbar-link logout">
                             Cerrar Sesión
                         </a>
                     </div>
@@ -76,7 +100,7 @@ const PerfilRecepcionista = () => {
 
                     <div className="profile-body">
                         <h2 className="section-title">Información Personal</h2>
-                        
+
                         <div className="info-grid">
                             <div className="info-item">
                                 <span className="info-label">Nombre Completo</span>
@@ -86,7 +110,7 @@ const PerfilRecepcionista = () => {
                                         className="info-value"
                                         value={datosRecepcionista.nombreCompleto}
                                         onChange={(e) => handleChange('nombreCompleto', e.target.value)}
-                                        style={{ 
+                                        style={{
                                             border: '2px solid #667eea',
                                             outline: 'none'
                                         }}
@@ -109,7 +133,7 @@ const PerfilRecepcionista = () => {
                                         className="info-value"
                                         value={datosRecepcionista.email}
                                         onChange={(e) => handleChange('email', e.target.value)}
-                                        style={{ 
+                                        style={{
                                             border: '2px solid #667eea',
                                             outline: 'none'
                                         }}
@@ -127,7 +151,7 @@ const PerfilRecepcionista = () => {
                                         className="info-value"
                                         value={datosRecepcionista.telefono}
                                         onChange={(e) => handleChange('telefono', e.target.value)}
-                                        style={{ 
+                                        style={{
                                             border: '2px solid #667eea',
                                             outline: 'none'
                                         }}
@@ -138,14 +162,14 @@ const PerfilRecepcionista = () => {
                             </div>
 
                             <div className="info-item">
-                                <span className="info-label">Fecha de Nacimiento</span>
+                                <span className="info-label">Fecha Nacimiento</span>
                                 {isEditing ? (
                                     <input
                                         type="text"
                                         className="info-value"
                                         value={datosRecepcionista.fechaNacimiento}
                                         onChange={(e) => handleChange('fechaNacimiento', e.target.value)}
-                                        style={{ 
+                                        style={{
                                             border: '2px solid #667eea',
                                             outline: 'none'
                                         }}
@@ -156,8 +180,8 @@ const PerfilRecepcionista = () => {
                             </div>
 
                             <div className="info-item">
-                                <span className="info-label">Fecha de Ingreso</span>
-                                <div className="info-value">{datosRecepcionista.fechaIngreso}</div>
+                                <span className="info-label">Numero Extension</span>
+                                <div className="info-value">{datosRecepcionista.numeroExtension}</div>
                             </div>
                         </div>
 
@@ -166,8 +190,8 @@ const PerfilRecepcionista = () => {
                                 {isEditing ? '💾 Guardar Cambios' : '✏️ Editar Información'}
                             </button>
                             {isEditing && (
-                                <button 
-                                    className="btn" 
+                                <button
+                                    className="btn"
                                     onClick={handleCancelar}
                                     style={{
                                         background: '#e5e7eb',

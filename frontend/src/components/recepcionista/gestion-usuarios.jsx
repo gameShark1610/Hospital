@@ -269,22 +269,66 @@ const GestionUsuarios = () => {
         }
     };
 
-    const handleBuscarUsuario = () => {
-        // ... (Tu lógica de búsqueda simulada se mantiene igual)
-        setUsuarioEncontrado({
-            id: 'D-12345',
-            nombre: 'Dr. Carlos Ramírez López',
-            tipo: 'Doctor',
-            especialidad: 'Cardiología',
-            citasActivas: 0,
-            estado: 'Activo'
-        });
-        setMostrarError(false);
+    const handleBuscarUsuario = async () => {
+        if (!busquedaUsuario) return;
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/doctores/buscar?query=${busquedaUsuario}`, {
+                credentials: "include"
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.length > 0) {
+                    // Tomamos el primero por simplicidad, o idealmente mostrar lista de resultados
+                    const doctor = data[0];
+                    setUsuarioEncontrado({
+                        id: doctor.id,
+                        nombre: doctor.nombreCompleto,
+                        tipo: 'Doctor',
+                        especialidad: doctor.especialidad,
+                        consultorio: doctor.consultorio,
+                        citasActivas: '-',
+                        estado: 'Activo'
+                    });
+                    setMostrarError(false);
+                } else {
+                    setUsuarioEncontrado(null);
+                    setMostrarError(true);
+                    alert("No se encontraron doctores con ese criterio.");
+                }
+            } else {
+                alert("Error al buscar");
+            }
+        } catch (error) {
+            console.error("Error buscando doctor:", error);
+            alert("Error de conexión");
+        }
     };
 
-    const handleDarDeBaja = () => {
-        console.log('Dar de baja:', usuarioEncontrado?.id);
-        // Lógica de baja
+    const handleDarDeBaja = async () => {
+        if (!usuarioEncontrado) return;
+
+        if (window.confirm(`¿Está seguro de eliminar al doctor ${usuarioEncontrado.nombre}? Esta acción no se puede deshacer.`)) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/doctores/${usuarioEncontrado.id}`, {
+                    method: "DELETE",
+                    credentials: "include"
+                });
+
+                if (response.ok) {
+                    alert("Doctor eliminado exitosamente");
+                    setUsuarioEncontrado(null);
+                    setBusquedaUsuario("");
+                } else {
+                    const data = await response.json();
+                    alert("Error eliminando: " + (data.message || "Error desconocido"));
+                }
+            } catch (error) {
+                console.error("Error eliminando doctor:", error);
+                alert("Error de conexión al eliminar");
+            }
+        }
     };
 
     const handleCancelar = () => {
@@ -702,6 +746,10 @@ const GestionUsuarios = () => {
                                 <div className="user-info-box">
                                     {/* ... Visualización del usuario igual ... */}
                                     <h3>Usuario Encontrado: {usuarioEncontrado.nombre}</h3>
+                                    <div className="user-details">
+                                        <p><strong>Especialidad:</strong> {usuarioEncontrado.especialidad}</p>
+                                        <p><strong>Consultorio:</strong> {usuarioEncontrado.consultorio}</p>
+                                    </div>
                                     <button className="btn btn-danger" onClick={handleDarDeBaja}>🗑️ Dar de Baja</button>
                                 </div>
                             )}

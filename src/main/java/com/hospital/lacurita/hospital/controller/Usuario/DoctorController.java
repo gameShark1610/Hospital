@@ -1,6 +1,5 @@
 package com.hospital.lacurita.hospital.controller.Usuario;
 
-
 import com.hospital.lacurita.hospital.dto.Doctor.RecetaDTO;
 import com.hospital.lacurita.hospital.dto.Usuario.DoctorDTO;
 import com.hospital.lacurita.hospital.service.DoctorService;
@@ -46,5 +45,20 @@ public class DoctorController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteDoctor(@PathVariable Integer id) {
+        try {
+            doctorService.eliminarDoctor(id);
+            return ResponseEntity.ok("Doctor eliminado exitosamente");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al eliminar doctor: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<DoctorDTO>> buscarDoctores(@RequestParam("query") String query) {
+        return ResponseEntity.ok(doctorService.buscarDoctores(query));
     }
 }
