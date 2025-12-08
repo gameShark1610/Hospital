@@ -21,4 +21,9 @@ public class RecepcionistaController {
     public ResponseEntity<RecepcionistaPerfilDTO> obtenerPerfil() {
         return ResponseEntity.ok(recepcionistaService.obtenerPerfilActual());
     }
+
+    @GetMapping("/bitacora-citas")
+    public ResponseEntity<java.util.List<com.hospital.lacurita.hospital.dto.Recepcionista.BitacoraCitaDTO>> getBitacoraCitas() {
+        return ResponseEntity.ok(recepcionistaService.getBitacoraCitas());
+    }
 }
