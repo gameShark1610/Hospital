@@ -3,6 +3,7 @@ package com.hospital.lacurita.hospital.controller;
 import com.hospital.lacurita.hospital.dto.LoginRequest;
 import com.hospital.lacurita.hospital.dto.LoginResponseDTO;
 import com.hospital.lacurita.hospital.dto.RegisterDoctorRequest;
+import com.hospital.lacurita.hospital.dto.RegisterPacienteRequest;
 import com.hospital.lacurita.hospital.dto.RegisterRecepcionistaRequest;
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
 import com.hospital.lacurita.hospital.model.Usuario;
@@ -67,6 +68,19 @@ public class Login {
         try {
             userService.registerRecepcionista(request);
             return ResponseEntity.ok(Collections.singletonMap("message", "Recepcionista registrada exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Collections.singletonMap("message", "Error interno del servidor"));
+        }
+    }
+
+    @PostMapping("/register/paciente")
+    public ResponseEntity<?> registerPaciente(@RequestBody RegisterPacienteRequest request) {
+        try {
+            userService.registerPaciente(request);
+            return ResponseEntity.ok(Collections.singletonMap("message", "Paciente registrado exitosamente"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
         } catch (Exception e) {

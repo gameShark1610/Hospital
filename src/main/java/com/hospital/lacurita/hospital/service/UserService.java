@@ -1,6 +1,7 @@
 package com.hospital.lacurita.hospital.service;
 
 import com.hospital.lacurita.hospital.dto.RegisterDoctorRequest;
+import com.hospital.lacurita.hospital.dto.RegisterPacienteRequest;
 import com.hospital.lacurita.hospital.dto.RegisterRecepcionistaRequest;
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
 import com.hospital.lacurita.hospital.model.*;
@@ -223,6 +224,55 @@ public class UserService {
         recepcionista.setNumeroExtension(request.getNumeroExtension());
 
         recepcionistaRepository.save(recepcionista);
+    }
+
+    @Transactional
+    public void registerPaciente(RegisterPacienteRequest request) {
+        // 1. Validar Email
+        if (userRepository.findByUsuario(request.getCorreo()).isPresent()) {
+            throw new RuntimeException("El correo ya está registrado");
+        }
+
+        // 2. Crear y Guardar Persona
+        Persona persona = new Persona();
+        persona.setNombre(request.getNombre());
+        persona.setPaterno(request.getPaterno());
+        persona.setMaterno(request.getMaterno());
+        persona.setFechaNacim(request.getFechaNacim());
+        persona.setTelefono(request.getTelefono());
+
+        // Mapeo Sexo
+        boolean esMasculino = request.getSexo() != null &&
+                (request.getSexo().equalsIgnoreCase("Masculino") ||
+                        request.getSexo().equalsIgnoreCase("M"));
+        persona.setSexo(esMasculino);
+
+        persona = personaRepository.save(persona);
+
+        // 3. Registrar Usuario (Tipo 1 = Paciente)
+        TipoUsuario tipoUsuario = tipoUsuarioRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("Tipo de usuario Paciente no encontrado"));
+
+        Usuario usuario = new Usuario();
+        usuario.setUsuario(request.getCorreo());
+        usuario.setContraseña(passwordEncoder.encode(request.getPassword()));
+        usuario.setPersona(persona);
+        usuario.setTipoUsuario(tipoUsuario);
+
+        usuario = userRepository.save(usuario);
+
+        // 4. Crear Historial Médico
+        HistorialMedico historial = new HistorialMedico();
+        historial.setTipoSangre(request.getTipoSangre());
+        historial.setPeso(request.getPeso());
+        historial.setEstatura(request.getEstatura());
+        historial = historialMedicoRepository.save(historial);
+
+        // 5. Crear Paciente
+        Paciente paciente = new Paciente();
+        paciente.setUsuario(usuario);
+        paciente.setHistorialMedico(historial);
+        pacienteRepository.save(paciente);
     }
 
     public Usuario findByUsername(String username) {

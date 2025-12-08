@@ -48,8 +48,14 @@ const GestionUsuarios = () => {
         // Extras de paciente
         tipoSangre: '',
         alergias: '',
-        direccion: ''
+        direccion: '',
+        peso: '',
+        estatura: ''
     });
+
+    // ... inside render ...
+
+
 
     const [formRecepcionista, setFormRecepcionista] = useState({
         nombre: '',
@@ -138,6 +144,7 @@ const GestionUsuarios = () => {
         } else if (tipoUsuario === 'paciente') {
             datosFormulario = formPaciente;
             tipoId = 1; // ID 1 para Paciente
+            endpoint = "http://localhost:8080/api/auth/register/paciente";
         } else if (tipoUsuario === 'recepcionista') {
             datosFormulario = formRecepcionista;
             tipoId = 3; // Asumiendo ID 3 para Recepcionista
@@ -196,18 +203,46 @@ const GestionUsuarios = () => {
                 // Recepcionista
                 numeroExtension: datosFormulario.numeroExtension
             }
-        } else {
+        } else if (tipoUsuario === 'recepcionista') {
             dataToSend = {
+                // Base
                 correo: datosFormulario.correo,
                 password: datosFormulario.password,
-                tipoUsuarioId: tipoId,
+                tipoUsuarioId: 3,
                 nombre: datosFormulario.nombre,
                 paterno: datosFormulario.paterno,
                 materno: datosFormulario.materno,
                 fechaNacim: datosFormulario.fechaNac,
                 sexo: datosFormulario.sexo,
-                telefono: datosFormulario.telefono
+                telefono: datosFormulario.telefono,
+                // Empleado
+                sueldo: datosFormulario.sueldo,
+                curp: datosFormulario.curp,
+                horarioId: datosFormulario.horarioId,
+                // Recepcionista
+                numeroExtension: datosFormulario.numeroExtension
+            }
+        } else if (tipoUsuario === 'paciente') {
+            dataToSend = {
+                // Base
+                correo: datosFormulario.correo,
+                password: datosFormulario.password,
+                tipoUsuarioId: 1,
+                nombre: datosFormulario.nombre,
+                paterno: datosFormulario.paterno,
+                materno: datosFormulario.materno,
+                fechaNacim: datosFormulario.fechaNac,
+                sexo: datosFormulario.sexo,
+                telefono: datosFormulario.telefono,
+                // Historial
+                tipoSangre: datosFormulario.tipoSangre,
+                peso: datosFormulario.peso,
+                estatura: datosFormulario.estatura
             };
+
+        } else {
+            // ... fallback ...
+            dataToSend = { ...datosFormulario, tipoUsuarioId: tipoId };
         }
 
 
@@ -500,9 +535,25 @@ const GestionUsuarios = () => {
                                             <select name="tipoSangre" value={formPaciente.tipoSangre} onChange={handleChangePaciente}>
                                                 <option value="">Seleccione</option>
                                                 <option value="O+">O+</option>
+                                                <option value="O-">O-</option>
                                                 <option value="A+">A+</option>
-                                                {/* ... otros tipos */}
+                                                <option value="A-">A-</option>
+                                                <option value="B+">B+</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="AB-">AB-</option>
                                             </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Peso (kg) <span className="required">*</span></label>
+                                            <input type="number" step="0.1" name="peso" value={formPaciente.peso} onChange={handleChangePaciente} placeholder="70.5" required />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Estatura (metros) <span className="required">*</span></label>
+                                            <input type="number" step="0.01" name="estatura" value={formPaciente.estatura} onChange={handleChangePaciente} placeholder="1.75" required />
                                         </div>
                                     </div>
 
@@ -520,10 +571,6 @@ const GestionUsuarios = () => {
                                     <div className="form-group">
                                         <label>Alergias</label>
                                         <input type="text" name="alergias" value={formPaciente.alergias} onChange={handleChangePaciente} placeholder="Ninguna" />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Dirección</label>
-                                        <textarea name="direccion" value={formPaciente.direccion} onChange={handleChangePaciente} />
                                     </div>
                                 </>
                             )}
