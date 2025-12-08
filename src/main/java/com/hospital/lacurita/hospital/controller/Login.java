@@ -2,6 +2,7 @@ package com.hospital.lacurita.hospital.controller;
 
 import com.hospital.lacurita.hospital.dto.LoginRequest;
 import com.hospital.lacurita.hospital.dto.LoginResponseDTO;
+import com.hospital.lacurita.hospital.dto.RegisterDoctorRequest;
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
 import com.hospital.lacurita.hospital.model.Usuario;
 import com.hospital.lacurita.hospital.service.UserService;
@@ -30,7 +31,6 @@ public class Login {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
@@ -43,10 +43,23 @@ public class Login {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Collections.singletonMap("message", "Error interno del servidor"));
+            return ResponseEntity.internalServerError()
+                    .body(Collections.singletonMap("message", "Error interno del servidor"));
         }
     }
 
+    @PostMapping("/register/doctor")
+    public ResponseEntity<?> registerDoctor(@RequestBody RegisterDoctorRequest request) {
+        try {
+            userService.registerDoctor(request);
+            return ResponseEntity.ok(Collections.singletonMap("message", "Doctor registrado exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Collections.singletonMap("message", "Error interno del servidor"));
+        }
+    }
 
     @GetMapping("/user")
     public ResponseEntity<?> getCurrentUser() {
@@ -80,7 +93,7 @@ public class Login {
 
             LoginResponseDTO response = new LoginResponseDTO(
                     "Login successful",
-                    usuario.getTipoUsuario().getId()   // IMPORTANT: avoid returning the full entity
+                    usuario.getTipoUsuario().getId() // IMPORTANT: avoid returning the full entity
             );
 
             return ResponseEntity.ok(response);

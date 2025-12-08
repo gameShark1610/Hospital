@@ -1,11 +1,9 @@
 package com.hospital.lacurita.hospital.service;
 
+import com.hospital.lacurita.hospital.dto.RegisterDoctorRequest;
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
-import com.hospital.lacurita.hospital.model.Paciente;
-import com.hospital.lacurita.hospital.model.TipoUsuario;
-import com.hospital.lacurita.hospital.model.Usuario;
-import com.hospital.lacurita.hospital.repository.PacienteRepository;
-import com.hospital.lacurita.hospital.repository.UserRepository;
+import com.hospital.lacurita.hospital.model.*;
+import com.hospital.lacurita.hospital.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +22,30 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private HistorialMedicoRepository historialMedicoRepository;
+
+    @Autowired
+    private HorarioEmpleadoRepository horarioEmpleadoRepository;
+
+    @Autowired
+    private EmpleadoRepository empleadoRepository;
+
+    @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
+    private ConsultorioRepository consultorioRepository;
+
+    @Autowired
+    private EspecialidadRepository especialidadRepository;
+
+    @Autowired
+    private PersonaRepository personaRepository;
+
+    @Autowired
+    private TipoUsuarioRepository tipoUsuarioRepository;
 
     public Usuario authenticate(String correo, String password) {
         Usuario user = userRepository.findByUsuario(correo).orElse(null);
@@ -64,7 +86,79 @@ public class UserService {
                 registerRequest.getFechaNacim(),
                 registerRequest.getTipoUsuarioId(),
                 sexoId,
+                // ... existing register code ...
                 registerRequest.getTelefono());
+    }
+
+    @Transactional
+    public void registerDoctor(RegisterDoctorRequest request) {
+        // 1. Registrar Usuario Base (Persona)
+
+        // Obtener Sexo ID
+        boolean sexoId = false;
+        if (request.getSexo() != null &&
+                (request.getSexo().equalsIgnoreCase("Masculino")
+                        || request.getSexo().equalsIgnoreCase("M"))) {
+            sexoId = true;
+        }
+
+        Persona persona = new Persona();
+        persona.setNombre(request.getNombre());
+        persona.setPaterno(request.getPaterno());
+        persona.setMaterno(request.getMaterno());
+        persona.setFechaNacim(request.getFechaNacim());
+        persona.setSexo(sexoId);
+        persona.setTelefono(request.getTelefono());
+        persona = personaRepository.save(persona);
+
+        // 2. Registrar Usuario (Usuario)
+        Usuario usuario = new Usuario();
+        usuario.setUsuario(request.getCorreo());
+        usuario.setContraseña(passwordEncoder.encode(request.getPassword()));
+        usuario.setPersona(persona);
+        usuario.setTipoUsuario(tipoUsuarioRepository.findById(request.getTipoUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Tipo de usuario no encontrado")));
+        usuario = userRepository.save(usuario);
+
+        // 3. Crear Historial Médico
+        HistorialMedico historial = new HistorialMedico();
+        historial.setTipoSangre(request.getTipoSangre());
+        historial.setPeso(request.getPeso());
+        historial.setEstatura(request.getEstatura());
+        historial = historialMedicoRepository.save(historial);
+
+        // 3. Crear Paciente (Todos son pacientes)
+        Paciente paciente = new Paciente();
+        paciente.setUsuario(usuario);
+        paciente.setHistorialMedico(historial);
+        pacienteRepository.save(paciente);
+
+        // 4. Crear Empleado
+        Empleado empleado = new Empleado();
+        empleado.setUsuario(usuario);
+        empleado.setSueldo(request.getSueldo());
+        empleado.setCurp(request.getCurp());
+
+        HorarioEmpleado horario = horarioEmpleadoRepository.findById(request.getHorarioId())
+                .orElseThrow(() -> new RuntimeException("Horario no encontrado"));
+        empleado.setHorarioEmpleado(horario);
+
+        empleado = empleadoRepository.save(empleado);
+
+        // 5. Crear Doctor
+        Doctor doctor = new Doctor();
+        doctor.setEmpleado(empleado);
+        doctor.setNumCedula(request.getNumCedula());
+
+        Especialidad especialidad = especialidadRepository.findById(request.getEspecialidadId())
+                .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
+        doctor.setEspecialidad(especialidad);
+
+        Consultorio consultorio = consultorioRepository.findById(request.getConsultorioId())
+                .orElseThrow(() -> new RuntimeException("Consultorio no encontrado"));
+        doctor.setConsultorio(consultorio);
+
+        doctorRepository.save(doctor);
     }
 
     public void createTipoUsuario(TipoUsuario tipoUsuario, Usuario user) {

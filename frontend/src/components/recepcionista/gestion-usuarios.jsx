@@ -15,15 +15,24 @@ const GestionUsuarios = () => {
         nombre: '',
         paterno: '',
         materno: '',
-        fechaNac: '', // Necesario para SP
-        sexo: '',     // Necesario para SP
-        cedula: '',
-        especialidad: '',
+        fechaNac: '',
+        sexo: '',
         telefono: '',
         correo: '',
         password: '',
         confirmPassword: '',
-        horario: ''
+        // Historial Medico
+        tipoSangre: '',
+        peso: '',
+        estatura: '',
+        // Empleado
+        sueldo: '',
+        curp: '',
+        horarioId: '',
+        // Doctor
+        cedula: '',
+        especialidadId: '',
+        consultorioId: ''
     });
 
     const [formPaciente, setFormPaciente] = useState({
@@ -57,6 +66,30 @@ const GestionUsuarios = () => {
     });
 
     const [motivoBaja, setMotivoBaja] = useState('');
+
+    // Listas para dropdowns
+    const [especialidades, setEspecialidades] = useState([]);
+    const [horarios, setHorarios] = useState([]);
+    const [consultorios, setConsultorios] = useState([]);
+
+    React.useEffect(() => {
+        const fetchOptions = async () => {
+            try {
+                const [espRes, horRes, conRes] = await Promise.all([
+                    fetch("http://localhost:8080/api/especialidad", { credentials: "include" }),
+                    fetch("http://localhost:8080/api/options/horarios", { credentials: "include" }),
+                    fetch("http://localhost:8080/api/options/consultorios", { credentials: "include" })
+                ]);
+
+                if (espRes.ok) setEspecialidades(await espRes.json());
+                if (horRes.ok) setHorarios(await horRes.json());
+                if (conRes.ok) setConsultorios(await conRes.json());
+            } catch (err) {
+                console.error("Error fetching options:", err);
+            }
+        };
+        fetchOptions();
+    }, []);
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -93,11 +126,13 @@ const GestionUsuarios = () => {
     const handleRegistrar = async () => {
         let datosFormulario;
         let tipoId;
+        let endpoint = "http://localhost:8080/api/auth/register";
 
         // Selección de datos según el tipo
         if (tipoUsuario === 'doctor') {
             datosFormulario = formDoctor;
             tipoId = 2; // Asumiendo ID 2 para Doctor
+            endpoint = "http://localhost:8080/api/auth/register/doctor";
         } else if (tipoUsuario === 'paciente') {
             datosFormulario = formPaciente;
             tipoId = 1; // ID 1 para Paciente
@@ -112,22 +147,53 @@ const GestionUsuarios = () => {
             return;
         }
 
-        const dataToSend = {
-            correo: datosFormulario.correo,
-            password: datosFormulario.password,
-            tipoUsuarioId: tipoId,
-            nombre: datosFormulario.nombre,
-            paterno: datosFormulario.paterno,
-            materno: datosFormulario.materno,
-            fechaNacim: datosFormulario.fechaNac,
-            sexo: datosFormulario.sexo,
-            telefono: datosFormulario.telefono
-        };
+        let dataToSend;
+
+        if (tipoUsuario === 'doctor') {
+            dataToSend = {
+                // Base
+                correo: datosFormulario.correo,
+                password: datosFormulario.password,
+                tipoUsuarioId: 2,
+                nombre: datosFormulario.nombre,
+                paterno: datosFormulario.paterno,
+                materno: datosFormulario.materno,
+                fechaNacim: datosFormulario.fechaNac,
+                sexo: datosFormulario.sexo,
+                telefono: datosFormulario.telefono,
+                // Historial
+                tipoSangre: datosFormulario.tipoSangre,
+                peso: datosFormulario.peso,
+                estatura: datosFormulario.estatura,
+                // Empleado
+                sueldo: datosFormulario.sueldo,
+                curp: datosFormulario.curp,
+                horarioId: datosFormulario.horarioId,
+                // Doctor
+                numCedula: datosFormulario.cedula,
+                especialidadId: datosFormulario.especialidadId,
+                consultorioId: datosFormulario.consultorioId
+            }
+        } else {
+            dataToSend = {
+                correo: datosFormulario.correo,
+                password: datosFormulario.password,
+                tipoUsuarioId: tipoId,
+                nombre: datosFormulario.nombre,
+                paterno: datosFormulario.paterno,
+                materno: datosFormulario.materno,
+                fechaNacim: datosFormulario.fechaNac,
+                sexo: datosFormulario.sexo,
+                telefono: datosFormulario.telefono
+            };
+        }
+
 
         try {
-            const response = await fetch("http://localhost:8080/api/auth/register", {
+            const response = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include", // Importante: enviar cookies de sesión
                 body: JSON.stringify(dataToSend)
             });
 
@@ -227,7 +293,7 @@ const GestionUsuarios = () => {
                             {tipoUsuario === 'doctor' && (
                                 <>
                                     <h3 className="form-subtitle">Datos Personales y Cuenta (Doctor)</h3>
-                                    
+
                                     <div className="form-row">
                                         <div className="form-group">
                                             <label>Nombre <span className="required">*</span></label>
@@ -290,16 +356,71 @@ const GestionUsuarios = () => {
                                     <div className="form-row">
                                         <div className="form-group">
                                             <label>Especialidad <span className="required">*</span></label>
-                                            <select name="especialidad" value={formDoctor.especialidad} onChange={handleChangeDoctor}>
+                                            <select name="especialidadId" value={formDoctor.especialidadId} onChange={handleChangeDoctor}>
                                                 <option value="">Seleccione</option>
-                                                <option value="cardiologia">Cardiología</option>
-                                                <option value="pediatria">Pediatría</option>
-                                                <option value="general">General</option>
+                                                {especialidades.map(esp => (
+                                                    <option key={esp.id} value={esp.id}>{esp.especialidad}</option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div className="form-group">
-                                            <label>Horario</label>
-                                            <input type="text" name="horario" value={formDoctor.horario} onChange={handleChangeDoctor} placeholder="Ej: Lunes a Viernes 9-5" />
+                                            <label>Horario <span className="required">*</span></label>
+                                            <select name="horarioId" value={formDoctor.horarioId} onChange={handleChangeDoctor}>
+                                                <option value="">Seleccione Horario</option>
+                                                {horarios.map(h => (
+                                                    <option key={h.id} value={h.id}>
+                                                        {h.turno} ({h.horaEntrada} - {h.horaSalida})
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Consultorio <span className="required">*</span></label>
+                                            <select name="consultorioId" value={formDoctor.consultorioId} onChange={handleChangeDoctor}>
+                                                <option value="">Seleccione</option>
+                                                {consultorios.map(c => (
+                                                    <option key={c.id} value={c.id}>{c.numConsultorio} (Piso {c.piso})</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Sueldo Mensual ($) <span className="required">*</span></label>
+                                            <input type="number" step="0.01" name="sueldo" value={formDoctor.sueldo} onChange={handleChangeDoctor} />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>CURP <span className="required">*</span></label>
+                                            <input type="text" name="curp" value={formDoctor.curp} onChange={handleChangeDoctor} maxLength="18" placeholder="CURP" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Tipo de Sangre <span className="required">*</span></label>
+                                            <select name="tipoSangre" value={formDoctor.tipoSangre} onChange={handleChangeDoctor}>
+                                                <option value="">Seleccione</option>
+                                                <option value="O+">O+</option>
+                                                <option value="O-">O-</option>
+                                                <option value="A+">A+</option>
+                                                <option value="A-">A-</option>
+                                                <option value="B+">B+</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="AB-">AB-</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Peso (kg) <span className="required">*</span></label>
+                                            <input type="number" step="0.1" name="peso" value={formDoctor.peso} onChange={handleChangeDoctor} placeholder="70.5" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Estatura (metros) <span className="required">*</span></label>
+                                            <input type="number" step="0.01" name="estatura" value={formDoctor.estatura} onChange={handleChangeDoctor} placeholder="1.75" />
                                         </div>
                                     </div>
                                 </>
@@ -309,7 +430,7 @@ const GestionUsuarios = () => {
                             {tipoUsuario === 'paciente' && (
                                 <>
                                     <h3 className="form-subtitle">Datos Personales y Cuenta (Paciente)</h3>
-                                    
+
                                     <div className="form-row">
                                         <div className="form-group">
                                             <label>Nombre <span className="required">*</span></label>
@@ -389,7 +510,7 @@ const GestionUsuarios = () => {
                             {tipoUsuario === 'recepcionista' && (
                                 <>
                                     <h3 className="form-subtitle">Datos Personales y Cuenta (Recepcionista)</h3>
-                                    
+
                                     <div className="form-row">
                                         <div className="form-group">
                                             <label>Nombre <span className="required">*</span></label>
@@ -478,10 +599,10 @@ const GestionUsuarios = () => {
                             <div className="search-section">
                                 <label>Buscar Usuario por ID o Nombre</label>
                                 <div className="search-bar">
-                                    <input 
-                                        type="text" 
-                                        value={busquedaUsuario} 
-                                        onChange={(e) => setBusquedaUsuario(e.target.value)} 
+                                    <input
+                                        type="text"
+                                        value={busquedaUsuario}
+                                        onChange={(e) => setBusquedaUsuario(e.target.value)}
                                         placeholder="Ingrese ID o nombre"
                                     />
                                     <button className="btn btn-primary" onClick={handleBuscarUsuario}>🔍 Buscar</button>
