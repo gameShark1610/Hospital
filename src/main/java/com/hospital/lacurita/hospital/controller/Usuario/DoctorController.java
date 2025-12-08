@@ -61,4 +61,10 @@ public class DoctorController {
     public ResponseEntity<List<DoctorDTO>> buscarDoctores(@RequestParam("query") String query) {
         return ResponseEntity.ok(doctorService.buscarDoctores(query));
     }
+
+    @GetMapping("/historial/{pacienteId}")
+    public ResponseEntity<com.hospital.lacurita.hospital.dto.Doctor.HistorialPacienteDTO> getHistorial(
+            @PathVariable Integer pacienteId) {
+        return ResponseEntity.ok(doctorService.getHistorialPaciente(pacienteId));
+    }
 }

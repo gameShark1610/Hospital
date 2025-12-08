@@ -8,72 +8,47 @@ const HistorialPacientes = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedBitacora, setSelectedBitacora] = useState(null);
 
-    const pacienteData = {
-        id: 'P-12345',
-        nombre: 'Juan Pérez García',
-        edad: '35 años',
-        tipoSangre: 'O+',
-        telefono: '(555) 123-4567',
-        alergias: 'Penicilina',
-        totalConsultas: '12 visitas'
-    };
+    const [pacienteData, setPacienteData] = useState({
+        id: '',
+        nombre: '',
+        edad: '',
+        tipoSangre: '',
+        telefono: '',
+        alergias: '',
+        totalConsultas: ''
+    });
 
-    const bitacoraData = [
-        {
-            id: 'BIT-001',
-            fecha: '15 Nov 2025, 10:30 AM',
-            medico: 'Dr. Carlos Ramírez',
-            especialidad: 'Cardiología',
-            diagnostico: 'Hipertensión',
-            consultorio: 'Consultorio 3A',
-            motivo: 'Dolor de pecho y presión arterial elevada',
-            sintomas: 'Dolor torácico intermitente, mareos, presión arterial 140/90',
-            tratamiento: 'Enalapril 10mg - 1 tableta cada 24 horas. Control de presión arterial diaria. Dieta baja en sodio.',
-            notas: 'Paciente presenta hipertensión arterial grado 1. Se inicia tratamiento farmacológico y se recomienda seguimiento en 2 semanas. Importante control de peso y actividad física regular.'
-        },
-        {
-            id: 'BIT-002',
-            fecha: '1 Oct 2025, 2:00 PM',
-            medico: 'Dr. María González',
-            especialidad: 'Medicina General',
-            diagnostico: 'Revisión General',
-            consultorio: 'Consultorio 1B'
-        },
-        {
-            id: 'BIT-003',
-            fecha: '15 Ago 2025, 11:00 AM',
-            medico: 'Dr. Carlos Ramírez',
-            especialidad: 'Medicina General',
-            diagnostico: 'Faringitis',
-            consultorio: 'Consultorio 2A'
-        },
-        {
-            id: 'BIT-004',
-            fecha: '3 Jul 2025, 9:30 AM',
-            medico: 'Dr. Pedro Martínez',
-            especialidad: 'Traumatología',
-            diagnostico: 'Esguince de tobillo',
-            consultorio: 'Consultorio 4C'
-        },
-        {
-            id: 'BIT-005',
-            fecha: '20 Jun 2025, 3:45 PM',
-            medico: 'Dra. Ana Torres',
-            especialidad: 'Pediatría',
-            diagnostico: 'Control de rutina',
-            consultorio: 'Consultorio 5A'
-        }
-    ];
+    const [bitacoraData, setBitacoraData] = useState([]);
 
-    const buscarPaciente = () => {
+    const buscarPaciente = async () => {
         if (searchId.trim() === '') {
             alert('Por favor ingrese un ID de paciente');
             return;
         }
 
-        // Simular búsqueda - en producción se llamaría al backend
-        setShowResults(true);
-        setShowNoResults(false);
+        try {
+            // Check if ID starts with P- and strip it if necessary, or just send raw ID if backend expects int
+            // Backend expects Integer ID.
+            const idToSend = searchId.replace("P-", "");
+
+            const response = await fetch(`http://localhost:8080/api/doctores/historial/${idToSend}`, {
+                credentials: "include"
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setPacienteData(data); // Assuming state matches DTO structure roughly, might need mapping
+                setBitacoraData(data.bitacora);
+                setShowResults(true);
+                setShowNoResults(false);
+            } else {
+                setShowResults(false);
+                setShowNoResults(true);
+            }
+        } catch (error) {
+            console.error("Error fetching history:", error);
+            alert("Error al buscar historial");
+        }
     };
 
     const verDetalle = (bitacora) => {
@@ -117,15 +92,15 @@ const HistorialPacientes = () => {
                         <a href="/doctor/mis-citas" className="navbar-link">Mis Citas</a>
                         <a href="/doctor/perfil" className="navbar-link">Mi Perfil</a>
                         <a href="#" onClick={(e) => {
-                e.preventDefault();
-                if (window.confirm("¿Cerrar sesión?")) {
-                  localStorage.removeItem("isLoggedIn");
-                  localStorage.removeItem("userEmail");
-                  localStorage.removeItem("token");
-                  alert("Sesión cerrada exitosamente");
-                  window.location.href = "/login";
-                }
-              }} className="navbar-link logout">
+                            e.preventDefault();
+                            if (window.confirm("¿Cerrar sesión?")) {
+                                localStorage.removeItem("isLoggedIn");
+                                localStorage.removeItem("userEmail");
+                                localStorage.removeItem("token");
+                                alert("Sesión cerrada exitosamente");
+                                window.location.href = "/login";
+                            }
+                        }} className="navbar-link logout">
                             Cerrar Sesión
                         </a>
                     </div>
@@ -136,10 +111,10 @@ const HistorialPacientes = () => {
                 <div className="page-header">
                     <h1>📚 Historial de Pacientes - Bitácora</h1>
                     <p>Busca el historial médico completo de un paciente por su ID</p>
-                    
+
                     <div className="search-bar">
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             value={searchId}
                             onChange={(e) => setSearchId(e.target.value)}
                             onKeyPress={handleKeyPress}
@@ -192,14 +167,13 @@ const HistorialPacientes = () => {
                                     <th>Especialidad</th>
                                     <th>Diagnóstico</th>
                                     <th>Consultorio</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {bitacoraData.map(bitacora => (
                                     <tr key={bitacora.id}>
                                         <td><strong>{bitacora.id}</strong></td>
-                                        <td>{bitacora.fecha}</td>
+                                        <td>{bitacora.fechaMov.split('T')[0]}</td>
                                         <td>{bitacora.medico}</td>
                                         <td>
                                             <span className={`badge ${getEspecialidadClass(bitacora.especialidad)}`}>
@@ -208,14 +182,7 @@ const HistorialPacientes = () => {
                                         </td>
                                         <td>{bitacora.diagnostico}</td>
                                         <td>{bitacora.consultorio}</td>
-                                        <td>
-                                            <button 
-                                                className="btn-detail" 
-                                                onClick={() => verDetalle(bitacora)}
-                                            >
-                                                Ver Detalle
-                                            </button>
-                                        </td>
+
                                     </tr>
                                 ))}
                             </tbody>
@@ -248,7 +215,7 @@ const HistorialPacientes = () => {
                                 <h3>Información de la Consulta</h3>
                                 <div className="detail-grid">
                                     <p><strong>ID Bitácora:</strong> {selectedBitacora.id}</p>
-                                    <p><strong>Fecha:</strong> {selectedBitacora.fecha}</p>
+                                    <p><strong>Fecha:</strong> {selectedBitacora.fechaMov.split('T')[0]}</p>
                                     <p><strong>Paciente:</strong> {pacienteData.nombre}</p>
                                     <p><strong>ID Paciente:</strong> {pacienteData.id}</p>
                                     <p><strong>Médico:</strong> {selectedBitacora.medico}</p>
@@ -258,31 +225,24 @@ const HistorialPacientes = () => {
                                 </div>
                             </div>
 
-                            {selectedBitacora.motivo && (
+                            {selectedBitacora.diagnostico && (
                                 <div className="detail-section">
-                                    <h3>Motivo de Consulta</h3>
-                                    <p>{selectedBitacora.motivo}</p>
-                                </div>
-                            )}
-
-                            {selectedBitacora.sintomas && (
-                                <div className="detail-section">
-                                    <h3>Síntomas</h3>
-                                    <p>{selectedBitacora.sintomas}</p>
-                                </div>
-                            )}
-
-                            {selectedBitacora.tratamiento && (
-                                <div className="detail-section">
-                                    <h3>Tratamiento Prescrito</h3>
-                                    <p>{selectedBitacora.tratamiento}</p>
+                                    <h3>Diagnóstico</h3>
+                                    <p>{selectedBitacora.diagnostico}</p>
                                 </div>
                             )}
 
                             {selectedBitacora.notas && (
                                 <div className="detail-section">
-                                    <h3>Notas del Médico</h3>
+                                    <h3>Observaciones</h3>
                                     <p>{selectedBitacora.notas}</p>
+                                </div>
+                            )}
+
+                            {selectedBitacora.tratamiento && (
+                                <div className="detail-section">
+                                    <h3>Tratamiento</h3>
+                                    <p>{selectedBitacora.tratamiento}</p>
                                 </div>
                             )}
                         </>

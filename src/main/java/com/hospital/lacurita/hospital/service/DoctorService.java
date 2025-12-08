@@ -2,16 +2,26 @@ package com.hospital.lacurita.hospital.service;
 
 import com.hospital.lacurita.hospital.dto.Doctor.CitasPendientesDoctorDTO;
 import com.hospital.lacurita.hospital.dto.Doctor.DoctorDatosProfesionalDTO;
+import com.hospital.lacurita.hospital.dto.Doctor.HistorialPacienteDTO;
 import com.hospital.lacurita.hospital.dto.Usuario.DoctorDTO;
+import com.hospital.lacurita.hospital.model.BitacoraHistorial;
 import com.hospital.lacurita.hospital.model.Doctor;
 import com.hospital.lacurita.hospital.model.Empleado;
+import com.hospital.lacurita.hospital.model.HistorialAlergia;
+import com.hospital.lacurita.hospital.model.HistorialMedico;
 import com.hospital.lacurita.hospital.model.Paciente;
+import com.hospital.lacurita.hospital.model.Persona;
+import com.hospital.lacurita.hospital.model.Usuario;
+import com.hospital.lacurita.hospital.repository.BitacoraHistorialRepository;
 import com.hospital.lacurita.hospital.repository.DoctorRepository;
 import com.hospital.lacurita.hospital.repository.EmpleadoRepository;
+import com.hospital.lacurita.hospital.repository.HistorialAlergiaRepository;
 import com.hospital.lacurita.hospital.repository.PacienteRepository;
 import com.hospital.lacurita.hospital.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,14 +32,20 @@ public class DoctorService {
     private final UserService userService;
     private final PacienteRepository pacienteRepository;
     private final EmpleadoRepository empleadoRepository;
+    private final BitacoraHistorialRepository bitacoraHistorialRepository;
+    private final HistorialAlergiaRepository historialAlergiaRepository;
 
     public DoctorService(DoctorRepository doctorRepository, UserService userService,
             PacienteRepository pacienteRepository, UserRepository userRepository,
-            EmpleadoRepository empleadoRepository) {
+            EmpleadoRepository empleadoRepository,
+            BitacoraHistorialRepository bitacoraHistorialRepository,
+            HistorialAlergiaRepository historialAlergiaRepository) {
         this.doctorRepository = doctorRepository;
         this.userService = userService;
         this.pacienteRepository = pacienteRepository;
         this.empleadoRepository = empleadoRepository;
+        this.bitacoraHistorialRepository = bitacoraHistorialRepository;
+        this.historialAlergiaRepository = historialAlergiaRepository;
     }
 
     public List<DoctorDTO> getDoctoresPorEspecialidad(Integer especialidadId) {
@@ -127,20 +143,68 @@ public class DoctorService {
                     String nombre = row[1] + " " + row[2] + " " + (row[3] != null ? row[3] : "");
                     String especialidad = (String) row[4];
                     String consultorio = row[5].toString();
-
-                    // Reusing DoctorDTO but maybe I should create a new DTO or extend it if I want
-                    // to show more info
-                    // The existing DoctorDTO has (id, nombre). Let's stick to it or make a new one
-                    // 'DoctorSearchResultDTO'.
-                    // For now, let's put "Especialidad - Consultorio" in the name field for quick
-                    // display or just return basic info.
-                    // Wait, the frontend needs to show this info.
-                    // Let's assume DoctorDTO logic.
-                    // return new DoctorDTO(id, nombre + " (" + especialidad + ") - " +
-                    // consultorio);
                     return new DoctorDTO(id, nombre, especialidad, consultorio);
                 })
                 .collect(Collectors.toList());
+    }
+
+    public HistorialPacienteDTO getHistorialPaciente(Integer pacienteId) {
+        // 1. Fetch Paciente
+        Paciente paciente = pacienteRepository.findById(pacienteId)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+
+        Usuario usuario = paciente.getUsuario();
+        Persona persona = usuario.getPersona();
+        HistorialMedico historial = paciente.getHistorialMedico();
+
+        // 2. Fetch Allergies
+        List<HistorialAlergia> alergiasRel = historialAlergiaRepository.findByHistorialMedicoId(historial.getId());
+        String alergiasStr = alergiasRel.stream()
+                .map(ha -> ha.getAlergia().getAlergia())
+                .collect(Collectors.joining(", "));
+        if (alergiasStr.isEmpty())
+            alergiasStr = "Ninguna";
+
+        // 3. Fetch Bitacora
+        List<BitacoraHistorial> bitacoraRaw = bitacoraHistorialRepository
+                .findByPacienteIdOrderByFechaMovDesc(paciente.getId());
+
+        // 4. Map Bitacora
+        List<HistorialPacienteDTO.BitacoraDetalleDTO> bitacoraMapped = bitacoraRaw.stream()
+                .map(b -> {
+
+                    Doctor doctor= doctorRepository.findById(b.getDoctorId()).orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
+                    String medicoNombre = "Dr. " + doctor.getEmpleado().getUsuario().getPersona().getNombre()+" "+doctor.getEmpleado().getUsuario().getPersona().getPaterno()+" "+doctor.getEmpleado().getUsuario().getPersona().getMaterno();
+                    return new HistorialPacienteDTO.BitacoraDetalleDTO(
+                            b.getId(),
+                            b.getFechaMov(),
+                            b.getFechaCita(),
+                            medicoNombre,
+                            b.getEspecialidad(),
+                            b.getDiagnostico(),
+                            String.valueOf(b.getConsultorio()),
+                            null,
+                            null,
+                            null,
+                            null);
+                }).collect(Collectors.toList());
+
+        // 5. Calculate Age
+        String edad = "Desconocida";
+        if (persona.getFechaNacim() != null) {
+            edad = Period.between(persona.getFechaNacim(), LocalDate.now()).getYears() + " años";
+        }
+
+        return new HistorialPacienteDTO(
+                paciente.getId(),
+                persona.getNombre() + " " + persona.getPaterno() + " "
+                        + (persona.getMaterno() != null ? persona.getMaterno() : ""),
+                edad,
+                historial.getTipoSangre(),
+                persona.getTelefono(),
+                alergiasStr,
+                bitacoraMapped.size() + " visitas",
+                bitacoraMapped);
     }
 
 }
