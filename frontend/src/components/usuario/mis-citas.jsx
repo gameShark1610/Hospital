@@ -40,7 +40,7 @@ function MisCitas() {
       setCitasFiltradas(data);
     } catch (error) {
       console.error("Error al cargar las citas:", error);
-      
+
       // Datos de ejemplo para pruebas (eliminar cuando la API esté lista)
       const citasEjemplo = [
         {
@@ -123,8 +123,8 @@ function MisCitas() {
   };
 
   const irAPagar = (cita) => {
-  navigate("/usuario/pagar", { state: { cita } });
-};
+    navigate("/usuario/pagar", { state: { cita } });
+  };
 
   const cancelarCita = async (citaId) => {
     if (!window.confirm("¿Estás seguro de que deseas cancelar esta cita?")) {
@@ -132,8 +132,8 @@ function MisCitas() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/api/citas/${citaId}/cancelar`, {
-        method: "PUT",
+      const response = await fetch(`http://localhost:8080/Cita/cancelar/${citaId}`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json"
         },

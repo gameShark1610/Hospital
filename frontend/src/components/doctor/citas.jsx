@@ -52,7 +52,7 @@ const CitasDoctor = () => {
     // Lógica de filtrado basada en el estado "citas" (ya no en la constante estática)
     const getFilteredCitas = () => {
         return citas.filter(cita => {
-            if (activeTab === 'todas') return true;
+            if (activeTab === 'todas') return cita.estatus === 'confirmed' || cita.estatus === 'completed' || cita.estatus === 'cancelled';
             
             // Lógica para "Hoy"
             if (activeTab === 'hoy') {
@@ -62,7 +62,7 @@ const CitasDoctor = () => {
 
             // Lógica para estatus (ajustada a los valores de tu backend: pending, confirmed, etc.)
             if (activeTab === 'pendientes') {
-                return cita.estatus === 'pending' || cita.estatus === 'confirmed';
+                return cita.estatus === 'confirmed';
             }
             if (activeTab === 'completadas') {
                 return cita.estatus === 'completed';

@@ -119,6 +119,8 @@ public class DoctorService {
                             case 3:
                                 dto.setEstatus("cancelled");
                                 break;
+                            case 4:
+                                dto.setEstatus("to cancel");
                             default:
                                 dto.setEstatus("unknown");
                         }

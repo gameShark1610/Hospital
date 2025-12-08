@@ -22,7 +22,9 @@ public class CitaService {
     private final HorarioPreestablecidoRepository horarioRepository;
     private final EstatusRepository estatusRepository;
 
-    public CitaService(CitaRepository citaRepository, PacienteRepository pacienteRepository, UserService userService, DoctorRepository doctorRepository, HorarioPreestablecidoRepository horarioRepository, EstatusRepository estatusRepository) {
+    public CitaService(CitaRepository citaRepository, PacienteRepository pacienteRepository, UserService userService,
+            DoctorRepository doctorRepository, HorarioPreestablecidoRepository horarioRepository,
+            EstatusRepository estatusRepository) {
         this.citaRepository = citaRepository;
         this.pacienteRepository = pacienteRepository;
         this.userService = userService;
@@ -34,7 +36,8 @@ public class CitaService {
     public List<MisCitasResponseDTO> obtenerMisCitas() {
 
         Integer idPaciente = userService.obtenerUsuarioIdActual();
-        Paciente paciente = pacienteRepository.findByUsuarioId(idPaciente).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        Paciente paciente = pacienteRepository.findByUsuarioId(idPaciente)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
         List<Cita> citas = citaRepository.findByPacienteId(paciente.getId());
         return citas.stream()
                 .map(this::convertToMisCitasResponseDTO)
@@ -45,11 +48,13 @@ public class CitaService {
         MisCitasResponseDTO dto = new MisCitasResponseDTO();
         dto.setId(cita.getId());
         dto.setEspecialidad(cita.getDoctor().getEspecialidad().getEspecialidad());
-        dto.setDoctor(cita.getDoctor().getEmpleado().getUsuario().getPersona().getNombre() + " " + cita.getDoctor().getEmpleado().getUsuario().getPersona().getPaterno());
+        dto.setDoctor(cita.getDoctor().getEmpleado().getUsuario().getPersona().getNombre() + " "
+                + cita.getDoctor().getEmpleado().getUsuario().getPersona().getPaterno());
         dto.setFecha(cita.getFechaAgendada()); // Adjust date formatting as needed
         dto.setHora(cita.getHorario().getHorarioIni().toString()); // Adjust time formatting as needed
-        dto.setConsultorio(cita.getDoctor().getConsultorio().getNumConsultorio().toString()); // Assuming there's a getConsultorio method
-        switch (cita.getEstatus().getId()-1) {
+        dto.setConsultorio(cita.getDoctor().getConsultorio().getNumConsultorio().toString()); // Assuming there's a
+                                                                                              // getConsultorio method
+        switch (cita.getEstatus().getId() - 1) {
             case 0:
                 dto.setEstado("pending");
                 dto.setPagado(false);
@@ -78,21 +83,42 @@ public class CitaService {
     public ResponseEntity<?> actualizarEstatus(Integer idCita) {
         Cita cita = citaRepository.findById(idCita)
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-        Estatus estatus = estatusRepository.findById(2).orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
+        Estatus estatus = estatusRepository.findById(2)
+                .orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
         cita.setEstatus(estatus);
         citaRepository.save(cita);
         return ResponseEntity.ok("Estatus actualizado");
     }
 
+    public ResponseEntity<?> cancelarCita(Integer idCita) {
+        Cita cita = citaRepository.findById(idCita)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+        // Assuming 4 is "Cancelada" based on user request
+        Estatus estatus = estatusRepository.findById(4)
+                .orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
 
+        // Security check: Ensure the cita belongs to the current user
+        Integer idPaciente = userService.obtenerUsuarioIdActual();
+        if (!cita.getPaciente().getUsuario().getId().equals(idPaciente)) {
+            return ResponseEntity.status(403).body("No tienes permiso para cancelar esta cita");
+        }
 
-    public CitaResponseDTO crearCita(CitaRequest citaRequest){
+        cita.setEstatus(estatus);
+        citaRepository.save(cita);
+        return ResponseEntity.ok("Cita cancelada correctamente");
+    }
+
+    public CitaResponseDTO crearCita(CitaRequest citaRequest) {
 
         Integer idPaciente = userService.obtenerUsuarioIdActual();
-        Paciente paciente = pacienteRepository.findByUsuarioId(idPaciente).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
-        Doctor doctor= doctorRepository.findById(citaRequest.getDoctorId()).orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
-        HorarioPreestablecido horario = horarioRepository.findById(citaRequest.getHorarioId()).orElseThrow(() -> new RuntimeException("Horario no encontrado"));
-        Estatus estatus = estatusRepository.findById(1).orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
+        Paciente paciente = pacienteRepository.findByUsuarioId(idPaciente)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        Doctor doctor = doctorRepository.findById(citaRequest.getDoctorId())
+                .orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
+        HorarioPreestablecido horario = horarioRepository.findById(citaRequest.getHorarioId())
+                .orElseThrow(() -> new RuntimeException("Horario no encontrado"));
+        Estatus estatus = estatusRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("Estatus no encontrado"));
 
         Cita cita = new Cita();
         cita.setFecha(Instant.now());
@@ -118,7 +144,5 @@ public class CitaService {
         dto.setEstatus(0);
         return dto;
     }
-
-
 
 }

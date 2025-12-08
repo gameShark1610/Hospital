@@ -1,4 +1,5 @@
 package com.hospital.lacurita.hospital.controller.Usuario;
+
 import com.hospital.lacurita.hospital.dto.Usuario.CitaRequest;
 import com.hospital.lacurita.hospital.service.CitaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,11 @@ public class CitaController {
     @PostMapping("/pagar/{id}")
     public ResponseEntity<?> pagarCita(@PathVariable Integer id) {
         return ResponseEntity.ok(citaService.actualizarEstatus(id));
+    }
+
+    @PostMapping("/cancelar/{id}")
+    public ResponseEntity<?> cancelarCita(@PathVariable Integer id) {
+        return citaService.cancelarCita(id);
     }
 
 }
