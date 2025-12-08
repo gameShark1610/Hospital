@@ -29,6 +29,9 @@ public class UserService {
     private HistorialMedicoRepository historialMedicoRepository;
 
     @Autowired
+    private HistorialAlergiaRepository historialAlergiaRepository;
+
+    @Autowired
     private HorarioEmpleadoRepository horarioEmpleadoRepository;
 
     @Autowired
@@ -48,6 +51,8 @@ public class UserService {
 
     @Autowired
     private TipoUsuarioRepository tipoUsuarioRepository;
+    @Autowired
+    private AlergiaRepository alergiaRepository;
 
     public Usuario authenticate(String correo, String password) {
         Usuario user = userRepository.findByUsuario(correo).orElse(null);
@@ -267,6 +272,27 @@ public class UserService {
         historial.setPeso(request.getPeso());
         historial.setEstatura(request.getEstatura());
         historial = historialMedicoRepository.save(historial);
+
+        // 5. Crear Alergia
+        // 5. Crear Alergia
+        // TODO: Usar el string 'request.getAlergias()' si se busca buscar/crear alergia
+        // por nombre.
+        // Por ahora mantenemos la logica de buscar ID 0 (e.g. Ninguna/Default).
+        Alergia alergia = alergiaRepository.findById(0)
+                .orElseThrow(() -> new RuntimeException(
+                        "Alergia por defecto (ID 0) no encontrada. Asegúrese de insertar una alergia con ID 0."));
+
+        HistorialAlergia historialAlergia = new HistorialAlergia();
+
+        HistorialAlergiaId id = new HistorialAlergiaId();
+        id.setAlergiaId(alergia.getId());
+        id.setHistorialMedicoId(historial.getId());
+        historialAlergia.setId(id);
+
+        historialAlergia.setAlergia(alergia);
+        historialAlergia.setHistorialMedico(historial);
+
+        historialAlergiaRepository.save(historialAlergia);
 
         // 5. Crear Paciente
         Paciente paciente = new Paciente();

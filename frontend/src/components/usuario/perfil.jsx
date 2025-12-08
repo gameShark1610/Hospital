@@ -4,7 +4,7 @@ import "../../styles/usuario/perfil.css";
 
 function Perfil() {
   const navigate = useNavigate();
-  
+
   // Estados para información personal
   const [datosPersonales, setDatosPersonales] = useState({
     nombre: "",
@@ -20,9 +20,10 @@ function Perfil() {
   const [datosMedicos, setDatosMedicos] = useState({
     tipoSangre: "",
     altura: "",
-    alergias: "",
-    enfermedadesCronicas: ""
+    peso: "",
+    alergias: ""
   });
+
 
   const [editandoPersonal, setEditandoPersonal] = useState(false);
   const [editandoMedico, setEditandoMedico] = useState(false);
@@ -44,12 +45,12 @@ function Perfil() {
   const cargarDatosMedico = async () => {
     try {
       const response = await fetch("http://localhost:8080/usuario/misDatosMedicos", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include"
-    });
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include"
+      });
       if (!response.ok) {
         throw new Error("Error al cargar los datos");
       }
@@ -58,27 +59,27 @@ function Perfil() {
       setDatosMedicos({
         tipoSangre: data2.tipoSangre || "",
         altura: data2.altura || "",
-        alergias: data2.alergias || "",
-        enfermedadesCronicas: data2.pesos || ""
+        peso: data2.peso || "",
+        alergias: data2.alergias || ""
       });
 
     } catch (error) {
       console.error("Error al cargar datos:", error);
     }
 
-    
+
     // Aquí podrías cargar datos médicos específicos si es necesario
   }
 
   const cargarDatosUsuario = async () => {
     try {
       const response = await fetch("http://localhost:8080/usuario/miperfil", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include"
-    });
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include"
+      });
 
       if (!response.ok) {
         throw new Error("Error al cargar los datos");
@@ -97,7 +98,7 @@ function Perfil() {
       await cargarDatosMedico();
     } catch (error) {
       console.error("Error al cargar datos:", error);
-      
+
       // Datos de ejemplo para pruebas
       const userEmail = localStorage.getItem("userEmail");
       setDatosPersonales({
@@ -274,7 +275,7 @@ function Perfil() {
                   required
                 />
               </div>
-              
+
             </div>
             <div className="form-row">
               <div className="form-group">
@@ -387,24 +388,17 @@ function Perfil() {
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="tipoSangre">Tipo de Sangre</label>
-                <select
+                <input
+                  type="text"
                   id="tipoSangre"
                   name="tipoSangre"
                   value={datosMedicos.tipoSangre}
                   onChange={handleChangeMedico}
+                  placeholder="Ej. O+, A-, B+, etc."
                   disabled={!editandoMedico}
-                >
-                  <option value="">Selecciona</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                </select>
+                />
               </div>
+
               <div className="form-group">
                 <label htmlFor="altura">Altura (m)</label>
                 <input
@@ -417,31 +411,31 @@ function Perfil() {
                   disabled={!editandoMedico}
                 />
               </div>
-               <div className="form-group">
-              <label htmlFor="alergias">Alergias</label>
-              <input
-                id="alergias"
-                name="alergias"
-                value={datosMedicos.alergias}
-                onChange={handleChangeMedico}
-                placeholder="Describe tus alergias (medicamentos, alimentos, etc.)"
-                disabled={!editandoMedico}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="enfermedadesCronicas">Peso (Kg)</label>
-              <input
-                id="enfermedadesCronicas"
-                name="enfermedadesCronicas"
-                value={datosMedicos.enfermedadesCronicas}
-                onChange={handleChangeMedico}
-                placeholder="70"
-                disabled={!editandoMedico}
-              />
-            </div>
+              <div className="form-group">
+                <label htmlFor="alergias">Alergias</label>
+                <input
+                  id="alergias"
+                  name="alergias"
+                  value={datosMedicos.alergias}
+                  onChange={handleChangeMedico}
+                  placeholder="Describe tus alergias (medicamentos, alimentos, etc.)"
+                  disabled={!editandoMedico}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="peso">Peso (Kg)</label>
+                <input
+                  id="peso"
+                  name="peso"
+                  value={datosMedicos.peso}
+                  onChange={handleChangeMedico}
+                  placeholder="70"
+                  disabled={!editandoMedico}
+                />
+              </div>
             </div>
 
-           
+
 
             <div className="button-group">
               {!editandoMedico ? (

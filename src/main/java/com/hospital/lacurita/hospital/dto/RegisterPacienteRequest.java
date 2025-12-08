@@ -11,4 +11,5 @@ public class RegisterPacienteRequest extends RegisterRequest {
     private String tipoSangre;
     private BigDecimal peso;
     private BigDecimal estatura;
+    private String alergias;
 }
