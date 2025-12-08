@@ -106,6 +106,9 @@ function Citas() {
 
   // Función para enviar la cita al backend
   const enviarCitaAPI = async (formData) => {
+    console.log("Sending to API:", formData);
+console.log("JSON:", JSON.stringify(formData));
+
     const response = await fetch("http://localhost:8080/Cita/agendar", {
       method: "POST",
       headers: {

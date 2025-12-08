@@ -25,9 +25,6 @@ public class Cita {
     @Column(name = "FechaAgendada", nullable = false)
     private LocalDate fechaAgendada;
 
-    @Column(name = "PoliticaDevolucion")
-    private Integer politicaDevolucion;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "EstatusId", nullable = false)

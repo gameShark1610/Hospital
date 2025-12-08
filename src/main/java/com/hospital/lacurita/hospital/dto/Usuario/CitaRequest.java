@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class CitaRequest {
-    private LocalDate FechaAgendada;
+    private LocalDate fechaAgendada;
     private Integer horarioId;
     private Integer doctorId;
 }

@@ -684,10 +684,10 @@ const GestionUsuarios = () => {
                 {tabActivo === 'baja' && (
                     <div className="tab-content active">
                         <div className="section">
-                            <h2 className="section-title">Dar de Baja Usuario</h2>
+                            <h2 className="section-title">Dar de Baja Doctor</h2>
                             {/* ... (Contenido de baja igual que tu código original) ... */}
                             <div className="search-section">
-                                <label>Buscar Usuario por ID o Nombre</label>
+                                <label>Buscar Doctor por ID o Nombre</label>
                                 <div className="search-bar">
                                     <input
                                         type="text"
