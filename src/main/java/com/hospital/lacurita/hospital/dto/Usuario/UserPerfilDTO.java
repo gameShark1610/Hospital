@@ -2,7 +2,6 @@ package com.hospital.lacurita.hospital.dto.Usuario;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data

@@ -1,26 +1,18 @@
 package com.hospital.lacurita.hospital.service;
 
 import com.hospital.lacurita.hospital.dto.RegisterRequest;
-import com.hospital.lacurita.hospital.dto.Usuario.UserPerfilDTO;
 import com.hospital.lacurita.hospital.model.Paciente;
-import com.hospital.lacurita.hospital.model.Persona;
 import com.hospital.lacurita.hospital.model.TipoUsuario;
 import com.hospital.lacurita.hospital.model.Usuario;
 import com.hospital.lacurita.hospital.repository.PacienteRepository;
-import com.hospital.lacurita.hospital.repository.PersonaRepository;
-import com.hospital.lacurita.hospital.repository.TipoUsuarioRepository;
 import com.hospital.lacurita.hospital.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 
 @Service
 public class UserService {
@@ -31,13 +23,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private TipoUsuarioRepository tipoUsuarioRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private PersonaRepository personaRepository;
 
     public Usuario authenticate(String correo, String password) {
         Usuario user = userRepository.findByUsuario(correo).orElse(null);
@@ -50,7 +36,8 @@ public class UserService {
     @Transactional
     public void register(RegisterRequest registerRequest) {
 
-        // 1. Validar si el usuario ya existe (Buena práctica hacerlo antes de llamar a BD)
+        // 1. Validar si el usuario ya existe (Buena práctica hacerlo antes de llamar a
+        // BD)
         if (userRepository.findByUsuario(registerRequest.getCorreo()).isPresent()) {
             throw new RuntimeException("El correo ya está registrado");
         }
@@ -62,7 +49,8 @@ public class UserService {
         // Asumiendo: 1 = Masculino, 0 = Femenino. Ajusta según tu lógica.
         int sexoId = 0;
         if (registerRequest.getSexo() != null &&
-                (registerRequest.getSexo().equalsIgnoreCase("Masculino") || registerRequest.getSexo().equalsIgnoreCase("M"))) {
+                (registerRequest.getSexo().equalsIgnoreCase("Masculino")
+                        || registerRequest.getSexo().equalsIgnoreCase("M"))) {
             sexoId = 1;
         }
 
@@ -76,22 +64,21 @@ public class UserService {
                 registerRequest.getFechaNacim(),
                 registerRequest.getTipoUsuarioId(),
                 sexoId,
-                registerRequest.getTelefono()
-        );
-}
+                registerRequest.getTelefono());
+    }
 
     public void createTipoUsuario(TipoUsuario tipoUsuario, Usuario user) {
-        switch (tipoUsuario.getId()){
+        switch (tipoUsuario.getId()) {
             case 1:
                 Paciente paciente = new Paciente();
                 paciente.setUsuario(user);
                 pacienteRepository.save(paciente);
                 break;
             case 2:
-                //tipoUsuarioRepository.save(tipoUsuario);
+                // tipoUsuarioRepository.save(tipoUsuario);
                 break;
             case 3:
-                //tipoUsuarioRepository.save(tipoUsuario);
+                // tipoUsuarioRepository.save(tipoUsuario);
                 break;
         }
     }
@@ -100,7 +87,6 @@ public class UserService {
         return userRepository.findByUsuario(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
-
 
     public Integer obtenerUsuarioIdActual() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -115,18 +101,24 @@ public class UserService {
         return null;
     }
 
-    /*public UserPerfilDTO obtenerPerfilUsuarioActual() {
-        Usuario usuario = userRepository.findById(obtenerUsuarioIdActual()).get();
-        UserPerfilDTO userPerfilDTO=new UserPerfilDTO();
-        userPerfilDTO.setNombre(usuario.getPersona().getNombre());
-        userPerfilDTO.setApellidos(usuario.getPersona().getPaterno()+" "+usuario.getPersona().getMaterno());
-        userPerfilDTO.setEmail(usuario.getUsuario());
-        userPerfilDTO.setFechaNacimiento(usuario.getPersona().getFechaNacim());
-        userPerfilDTO.setGenero(usuario.getPersona().getSexo() ? "Masculino" : "Femenino");
-
-        Paciente paciente = pacienteRepository.findByUsuarioId(usuario.getId()).orElse(null);
-        userPerfilDTO.setAltura(paciente.getHistorialMedico() != null ? paciente.getHistorialMedico().getEstatura() : new BigDecimal("0.0"));
-        return userPerfilDTO;
-    }*/
+    /*
+     * public UserPerfilDTO obtenerPerfilUsuarioActual() {
+     * Usuario usuario = userRepository.findById(obtenerUsuarioIdActual()).get();
+     * UserPerfilDTO userPerfilDTO=new UserPerfilDTO();
+     * userPerfilDTO.setNombre(usuario.getPersona().getNombre());
+     * userPerfilDTO.setApellidos(usuario.getPersona().getPaterno()+" "+usuario.
+     * getPersona().getMaterno());
+     * userPerfilDTO.setEmail(usuario.getUsuario());
+     * userPerfilDTO.setFechaNacimiento(usuario.getPersona().getFechaNacim());
+     * userPerfilDTO.setGenero(usuario.getPersona().getSexo() ? "Masculino" :
+     * "Femenino");
+     * 
+     * Paciente paciente =
+     * pacienteRepository.findByUsuarioId(usuario.getId()).orElse(null);
+     * userPerfilDTO.setAltura(paciente.getHistorialMedico() != null ?
+     * paciente.getHistorialMedico().getEstatura() : new BigDecimal("0.0"));
+     * return userPerfilDTO;
+     * }
+     */
 
 }

@@ -13,24 +13,23 @@ import java.util.List;
 
 @Service
 public class PersonaService {
-    private final PersonaRepository personaRepository;
     private final UserService userService;
     private final PacienteRepository pacienteRepository;
     private final UserRepository userRepository;
 
-    public PersonaService(PersonaRepository personaRepository, UserService userService, PacienteRepository pacienteRepository, UserRepository userRepository) {
-        this.personaRepository = personaRepository;
+    public PersonaService(PersonaRepository personaRepository, UserService userService,
+            PacienteRepository pacienteRepository, UserRepository userRepository) {
         this.userService = userService;
         this.pacienteRepository = pacienteRepository;
         this.userRepository = userRepository;
     }
 
-    public UserPerfilDTO mostrarDatosUsuario(){
+    public UserPerfilDTO mostrarDatosUsuario() {
         Integer usuarioID = userService.obtenerUsuarioIdActual();
-        Usuario usuario=userRepository. findById(usuarioID).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = userRepository.findById(usuarioID)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-
-        UserPerfilDTO userPerfilDTO=new UserPerfilDTO();
+        UserPerfilDTO userPerfilDTO = new UserPerfilDTO();
         userPerfilDTO.setNombre(usuario.getPersona().getNombre());
         userPerfilDTO.setApellidoPaterno(usuario.getPersona().getPaterno());
         userPerfilDTO.setApellidoMaterno(usuario.getPersona().getMaterno());
@@ -42,7 +41,8 @@ public class PersonaService {
 
     public DatosMedicosDTO mostrarDatosMedicos() {
         Integer usuarioID = userService.obtenerUsuarioIdActual();
-        Paciente paciente = pacienteRepository.findByUsuarioId(usuarioID).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        Paciente paciente = pacienteRepository.findByUsuarioId(usuarioID)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
         List<Object[]> result = pacienteRepository.obtenerHistorialRaw(paciente.getId());
         if (result.isEmpty()) {
             return null;
@@ -55,8 +55,5 @@ public class PersonaService {
         datosMedicosDTO.setAlergias(row[3].toString());
         return datosMedicosDTO;
     }
-
-
-
 
 }

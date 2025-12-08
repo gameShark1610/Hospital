@@ -2,7 +2,6 @@ package com.hospital.lacurita.hospital.dto.Doctor;
 
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -17,7 +16,8 @@ public class CitasPendientesDoctorDTO {
     private String estatus;
     private String numConsultorio;
 
-    public CitasPendientesDoctorDTO(Integer doctorId, String nombreDoctor, String nombrePaciente, Date fechaAgendada, String horario, String telefono, String numConsultorio) {
+    public CitasPendientesDoctorDTO(Integer doctorId, String nombreDoctor, String nombrePaciente, Date fechaAgendada,
+            String horario, String telefono, String numConsultorio) {
         this.doctorId = doctorId;
         this.nombreDoctor = nombreDoctor;
         this.nombrePaciente = nombrePaciente;
