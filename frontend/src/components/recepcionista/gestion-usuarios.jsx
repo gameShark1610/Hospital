@@ -55,14 +55,16 @@ const GestionUsuarios = () => {
         nombre: '',
         paterno: '',
         materno: '',
-        fechaNac: '', // Necesario para SP
-        sexo: '',     // Necesario para SP
+        fechaNac: '',
+        sexo: '',
         telefono: '',
         correo: '',
         password: '',
         confirmPassword: '',
-        turno: '',
-        fechaIngreso: ''
+        sueldo: '',
+        curp: '',
+        horarioId: '',
+        numeroExtension: ''
     });
 
     const [motivoBaja, setMotivoBaja] = useState('');
@@ -139,6 +141,7 @@ const GestionUsuarios = () => {
         } else if (tipoUsuario === 'recepcionista') {
             datosFormulario = formRecepcionista;
             tipoId = 3; // Asumiendo ID 3 para Recepcionista
+            endpoint = "http://localhost:8080/api/auth/register/recepcionista";
         }
 
         // Validación básica de contraseñas
@@ -173,6 +176,25 @@ const GestionUsuarios = () => {
                 numCedula: datosFormulario.cedula,
                 especialidadId: datosFormulario.especialidadId,
                 consultorioId: datosFormulario.consultorioId
+            }
+        } else if (tipoUsuario === 'recepcionista') {
+            dataToSend = {
+                // Base
+                correo: datosFormulario.correo,
+                password: datosFormulario.password,
+                tipoUsuarioId: 3,
+                nombre: datosFormulario.nombre,
+                paterno: datosFormulario.paterno,
+                materno: datosFormulario.materno,
+                fechaNacim: datosFormulario.fechaNac,
+                sexo: datosFormulario.sexo,
+                telefono: datosFormulario.telefono,
+                // Empleado
+                sueldo: datosFormulario.sueldo,
+                curp: datosFormulario.curp,
+                horarioId: datosFormulario.horarioId,
+                // Recepcionista
+                numeroExtension: datosFormulario.numeroExtension
             }
         } else {
             dataToSend = {
@@ -554,12 +576,33 @@ const GestionUsuarios = () => {
                                             <input type="email" name="correo" value={formRecepcionista.correo} onChange={handleChangeRecepcionista} />
                                         </div>
                                         <div className="form-group">
-                                            <label>Turno <span className="required">*</span></label>
-                                            <select name="turno" value={formRecepcionista.turno} onChange={handleChangeRecepcionista}>
-                                                <option value="">Seleccione</option>
-                                                <option value="matutino">Matutino</option>
-                                                <option value="vespertino">Vespertino</option>
+                                            <label>Horario <span className="required">*</span></label>
+                                            <select name="horarioId" value={formRecepcionista.horarioId} onChange={handleChangeRecepcionista} required>
+                                                <option value="">Seleccione Horario</option>
+                                                {horarios.map(h => (
+                                                    <option key={h.id} value={h.id}>
+                                                        {h.turno} ({h.horaEntrada} - {h.horaSalida})
+                                                    </option>
+                                                ))}
                                             </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Sueldo Mensual ($) <span className="required">*</span></label>
+                                            <input type="number" step="0.01" name="sueldo" value={formRecepcionista.sueldo} onChange={handleChangeRecepcionista} required />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>CURP <span className="required">*</span></label>
+                                            <input type="text" name="curp" value={formRecepcionista.curp} onChange={handleChangeRecepcionista} maxLength="18" placeholder="CURP" required />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>Número de Extensión <span className="required">*</span></label>
+                                            <input type="number" name="numeroExtension" value={formRecepcionista.numeroExtension} onChange={handleChangeRecepcionista} required />
                                         </div>
                                     </div>
 
