@@ -7,10 +7,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "Ticket", schema = "dbo")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,21 +29,11 @@ public class Ticket {
     @Column(name = "Fecha", nullable = false)
     private Instant fecha;
 
-    @NotNull
-    @Column(name = "Cantidad", nullable = false)
-    private Integer cantidad;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "MedicamentoId", nullable = false)
-    private Medicamento medicamento;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ServicioId")
-    private Servicio servicio;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EmpleadoId")
     private Empleado empleado;
+
+    @OneToMany(mappedBy = "folio")
+    private Set<TicketDetalle> ticketDetalles = new LinkedHashSet<>();
 
 }
