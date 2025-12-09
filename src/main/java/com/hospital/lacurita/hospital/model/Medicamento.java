@@ -30,4 +30,7 @@ public class Medicamento {
     @Column(name = "Stock")
     private Boolean stock;
 
+    @NotNull
+    @Column(name= "Cantidad",nullable = false)
+    private Integer cantidad;
 }

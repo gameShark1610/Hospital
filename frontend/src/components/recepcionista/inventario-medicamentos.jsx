@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/recepcionista/inventario_medicamentos.css';
 
@@ -8,197 +8,91 @@ const InventarioMedicamentos = () => {
     const [filtroEstado, setFiltroEstado] = useState('');
     const [modalAbierto, setModalAbierto] = useState(false);
     const [medicamentoSeleccionado, setMedicamentoSeleccionado] = useState(null);
+    const [cantidadAgregar, setCantidadAgregar] = useState('');
 
-    // Estados para el formulario del modal
-    const [formActualizar, setFormActualizar] = useState({
-        tipoMovimiento: '',
-        cantidad: '',
-        motivo: '',
-        stockMinimo: ''
-    });
+    const [medicamentos, setMedicamentos] = useState([]);
+    const [stats, setStats] = useState({ total: 0, enStock: 0, agotados: 0 });
 
-    // Datos simulados - vendrían del backend
-    const [medicamentos, setMedicamentos] = useState([
-        {
-            id: 'MED-001',
-            nombre: 'Paracetamol',
-            presentacion: '500mg - Tabletas',
-            stockActual: 450,
-            stockMinimo: 100,
-            precio: 50.00,
-            estado: 'disponible'
-        },
-        {
-            id: 'MED-002',
-            nombre: 'Amoxicilina',
-            presentacion: '500mg - Cápsulas',
-            stockActual: 85,
-            stockMinimo: 100,
-            precio: 120.00,
-            estado: 'bajo'
-        },
-        {
-            id: 'MED-003',
-            nombre: 'Ibuprofeno',
-            presentacion: '400mg - Tabletas',
-            stockActual: 320,
-            stockMinimo: 100,
-            precio: 80.00,
-            estado: 'disponible'
-        },
-        {
-            id: 'MED-004',
-            nombre: 'Omeprazol',
-            presentacion: '20mg - Cápsulas',
-            stockActual: 0,
-            stockMinimo: 50,
-            precio: 95.00,
-            estado: 'agotado'
-        },
-        {
-            id: 'MED-005',
-            nombre: 'Enalapril',
-            presentacion: '10mg - Tabletas',
-            stockActual: 180,
-            stockMinimo: 100,
-            precio: 110.00,
-            estado: 'disponible'
-        },
-        {
-            id: 'MED-006',
-            nombre: 'Metformina',
-            presentacion: '850mg - Tabletas',
-            stockActual: 65,
-            stockMinimo: 80,
-            precio: 85.00,
-            estado: 'bajo'
+    const fetchMedicamentos = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/medicamentos', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Medicamentos fetched:", data);
+                // Map backend data to frontend model if needed, or use directly
+                // Backend fields: id, nombreMed, precio, stock (bool), cantidad
+                setMedicamentos(data);
+
+                // Update stats
+                const total = data.length;
+                const enStock = data.filter(m => m.stock === true).length;
+                const agotados = data.filter(m => m.stock === false || m.cantidad === 0).length;
+
+                setStats({ total, enStock, agotados });
+            } else {
+                console.error("Failed to fetch medicamentos");
+            }
+        } catch (error) {
+            console.error("Error fetching medicamentos:", error);
         }
-    ]);
-
-    const estadisticas = {
-        total: medicamentos.length,
-        enStock: medicamentos.filter(m => m.estado === 'disponible').length,
-        stockBajo: medicamentos.filter(m => m.estado === 'bajo').length,
-        agotados: medicamentos.filter(m => m.estado === 'agotado').length
     };
+
+    useEffect(() => {
+        fetchMedicamentos();
+    }, []);
 
     const handleLogout = () => {
-        navigate('/login');
-    };
-
-    const handleBuscar = () => {
-        console.log('Buscar:', busqueda, 'Filtro:', filtroEstado);
-        // Aquí iría la lógica de búsqueda y filtrado
+        if (window.confirm("¿Cerrar sesión?")) {
+            localStorage.clear();
+            navigate('/login');
+        }
     };
 
     const handleAbrirActualizar = (medicamento) => {
         setMedicamentoSeleccionado(medicamento);
-        setFormActualizar({
-            tipoMovimiento: '',
-            cantidad: '',
-            motivo: '',
-            stockMinimo: medicamento.stockMinimo
-        });
+        setCantidadAgregar('');
         setModalAbierto(true);
     };
 
     const handleCerrarModal = () => {
         setModalAbierto(false);
         setMedicamentoSeleccionado(null);
-        setFormActualizar({
-            tipoMovimiento: '',
-            cantidad: '',
-            motivo: '',
-            stockMinimo: ''
-        });
+        setCantidadAgregar('');
     };
 
-    const handleChangeForm = (e) => {
-        setFormActualizar({
-            ...formActualizar,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleActualizarStock = () => {
-        if (!formActualizar.tipoMovimiento || !formActualizar.cantidad || !formActualizar.motivo) {
-            alert('Por favor complete todos los campos requeridos');
+    const handleActualizarStock = async () => {
+        if (!cantidadAgregar || parseInt(cantidadAgregar) <= 0) {
+            alert('Por favor ingrese una cantidad válida');
             return;
         }
 
-        const cantidad = parseInt(formActualizar.cantidad);
-        let nuevoStock = medicamentoSeleccionado.stockActual;
+        try {
+            // Include credentials if session uses cookies, although frontend snippet used credentials: 'include' recently.
+            // Using params for amount as defined in controller: /medicamentos/{id}/agregar?cantidad=X
+            const response = await fetch(`http://localhost:8080/medicamentos/${medicamentoSeleccionado.id}/agregar?cantidad=${cantidadAgregar}`, {
+                method: 'POST',
+                credentials: 'include'
+            });
 
-        // Calcular nuevo stock según tipo de movimiento
-        if (formActualizar.tipoMovimiento === 'entrada') {
-            nuevoStock += cantidad;
-        } else if (formActualizar.tipoMovimiento === 'salida') {
-            nuevoStock -= cantidad;
-        } else if (formActualizar.tipoMovimiento === 'ajuste') {
-            nuevoStock = cantidad;
-        }
-
-        // Determinar nuevo estado
-        let nuevoEstado = 'disponible';
-        if (nuevoStock === 0) {
-            nuevoEstado = 'agotado';
-        } else if (nuevoStock < formActualizar.stockMinimo) {
-            nuevoEstado = 'bajo';
-        }
-
-        // Actualizar medicamento
-        setMedicamentos(medicamentos.map(med => {
-            if (med.id === medicamentoSeleccionado.id) {
-                return {
-                    ...med,
-                    stockActual: nuevoStock,
-                    stockMinimo: parseInt(formActualizar.stockMinimo),
-                    estado: nuevoEstado
-                };
+            if (response.ok) {
+                alert("Stock agregado exitosamente");
+                fetchMedicamentos(); // Refresh list
+                handleCerrarModal();
+            } else {
+                alert("Error al actualizar stock");
             }
-            return med;
-        }));
-
-        console.log('Actualizar stock:', {
-            medicamento: medicamentoSeleccionado,
-            movimiento: formActualizar,
-            nuevoStock,
-            nuevoEstado
-        });
-
-        // Aquí iría la llamada al backend
-        handleCerrarModal();
+        } catch (error) {
+            console.error("Error updating stock:", error);
+            alert("Error de conexión");
+        }
     };
 
     const handleModalClick = (e) => {
-        if (e.target.className === 'modal show') {
+        if (e.target.className.includes('modal show')) {
             handleCerrarModal();
-        }
-    };
-
-    const getBadgeClass = (estado) => {
-        switch (estado) {
-            case 'disponible':
-                return 'badge-disponible';
-            case 'bajo':
-                return 'badge-bajo';
-            case 'agotado':
-                return 'badge-agotado';
-            default:
-                return '';
-        }
-    };
-
-    const getEstadoTexto = (estado) => {
-        switch (estado) {
-            case 'disponible':
-                return 'Disponible';
-            case 'bajo':
-                return 'Stock Bajo';
-            case 'agotado':
-                return 'Agotado';
-            default:
-                return estado;
         }
     };
 
@@ -206,9 +100,16 @@ const InventarioMedicamentos = () => {
         return `$${amount.toFixed(2)}`;
     };
 
+    // Filtering logic
     const medicamentosFiltrados = medicamentos.filter(med => {
-        const matchBusqueda = med.nombre.toLowerCase().includes(busqueda.toLowerCase());
-        const matchEstado = filtroEstado === '' || med.estado === filtroEstado;
+        const matchBusqueda = med.nombreMed.toLowerCase().includes(busqueda.toLowerCase());
+        // Simple mapping for filter state
+        // 'disponible' -> med.stock === true
+        // 'agotado' -> med.stock === false
+        let matchEstado = true;
+        if (filtroEstado === 'disponible') matchEstado = med.stock === true;
+        if (filtroEstado === 'agotado') matchEstado = med.stock === false;
+
         return matchBusqueda && matchEstado;
     });
 
@@ -221,16 +122,7 @@ const InventarioMedicamentos = () => {
                         <a href="/recepcionista/paginaRecepcionista" className="navbar-link">
                             ← Volver al Panel
                         </a>
-                        <a href="#" onClick={(e) => {
-                e.preventDefault();
-                if (window.confirm("¿Cerrar sesión?")) {
-                  localStorage.removeItem("isLoggedIn");
-                  localStorage.removeItem("userEmail");
-                  localStorage.removeItem("token");
-                  alert("Sesión cerrada exitosamente");
-                  window.location.href = "/login";
-                }
-              }} className="navbar-link logout">
+                        <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }} className="navbar-link logout">
                             Cerrar Sesión
                         </a>
                     </div>
@@ -243,23 +135,18 @@ const InventarioMedicamentos = () => {
                     <p>Gestiona y actualiza el stock de medicamentos del hospital</p>
                 </div>
 
-                {/* Estadísticas */}
                 <div className="stats-grid">
                     <div className="stat-card">
-                        <div className="stat-number">{estadisticas.total}</div>
+                        <div className="stat-number">{stats.total}</div>
                         <div className="stat-label">Total Medicamentos</div>
                     </div>
                     <div className="stat-card">
-                        <div className="stat-number">{estadisticas.enStock}</div>
+                        <div className="stat-number">{stats.enStock}</div>
                         <div className="stat-label">En Stock</div>
                     </div>
                     <div className="stat-card">
-                        <div className="stat-number">{estadisticas.stockBajo}</div>
-                        <div className="stat-label">Stock Bajo</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-number">{estadisticas.agotados}</div>
-                        <div className="stat-label">Agotados</div>
+                        <div className="stat-number">{stats.agotados}</div>
+                        <div className="stat-label">Agotados (Stock=No)</div>
                     </div>
                 </div>
 
@@ -267,59 +154,51 @@ const InventarioMedicamentos = () => {
                     <h2 className="section-title">Inventario Actual</h2>
 
                     <div className="search-filter">
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             value={busqueda}
                             onChange={(e) => setBusqueda(e.target.value)}
-                            placeholder="Buscar medicamento por nombre..."
+                            placeholder="Buscar medicamento..."
                         />
-                        <select 
+                        <select
                             value={filtroEstado}
                             onChange={(e) => setFiltroEstado(e.target.value)}
                         >
                             <option value="">Todos los estados</option>
-                            <option value="disponible">Disponible</option>
-                            <option value="bajo">Stock Bajo</option>
-                            <option value="agotado">Agotado</option>
+                            <option value="disponible">En Stock</option>
+                            <option value="agotado">Sin Stock</option>
                         </select>
-                        <button className="btn btn-primary" onClick={handleBuscar}>
-                            🔍 Buscar
-                        </button>
                     </div>
 
                     <table className="medicamentos-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Medicamento</th>
-                                <th>Presentación</th>
-                                <th>Stock Actual</th>
-                                <th>Stock Mínimo</th>
+                                <th>MedicamentoId</th>
+                                <th>NombreMed</th>
                                 <th>Precio</th>
-                                <th>Estado</th>
+                                <th>Stock</th>
+                                <th>Cantidad</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {medicamentosFiltrados.map((medicamento) => (
-                                <tr key={medicamento.id}>
-                                    <td><strong>{medicamento.id}</strong></td>
-                                    <td>{medicamento.nombre}</td>
-                                    <td>{medicamento.presentacion}</td>
-                                    <td>{medicamento.stockActual}</td>
-                                    <td>{medicamento.stockMinimo}</td>
-                                    <td>{formatCurrency(medicamento.precio)}</td>
+                            {medicamentosFiltrados.map((med) => (
+                                <tr key={med.id}>
+                                    <td><strong>{med.id}</strong></td>
+                                    <td>{med.nombreMed}</td>
+                                    <td>{formatCurrency(med.precio)}</td>
                                     <td>
-                                        <span className={`badge ${getBadgeClass(medicamento.estado)}`}>
-                                            {getEstadoTexto(medicamento.estado)}
+                                        <span className={`badge ${med.stock ? 'badge-disponible' : 'badge-agotado'}`}>
+                                            {med.stock ? 'Sí' : 'No'}
                                         </span>
                                     </td>
+                                    <td>{med.cantidad}</td>
                                     <td>
-                                        <button 
+                                        <button
                                             className="btn-action"
-                                            onClick={() => handleAbrirActualizar(medicamento)}
+                                            onClick={() => handleAbrirActualizar(med)}
                                         >
-                                            Actualizar
+                                            + Agregar
                                         </button>
                                     </td>
                                 </tr>
@@ -329,86 +208,36 @@ const InventarioMedicamentos = () => {
                 </div>
             </div>
 
-            {/* Modal Actualizar Stock */}
+            {/* Modal Agregar Stock */}
             {modalAbierto && medicamentoSeleccionado && (
-                <div 
-                    className={`modal ${modalAbierto ? 'show' : ''}`}
-                    onClick={handleModalClick}
-                >
+                <div className={`modal ${modalAbierto ? 'show' : ''}`} onClick={handleModalClick}>
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h2>📦 Actualizar Inventario</h2>
+                            <h2>📦 Agregar Stock</h2>
                             <span className="close" onClick={handleCerrarModal}>&times;</span>
                         </div>
 
                         <div className="form-group">
-                            <label>Medicamento</label>
-                            <input 
-                                type="text" 
-                                value={`${medicamentoSeleccionado.nombre} ${medicamentoSeleccionado.presentacion}`}
-                                disabled
-                            />
+                            <label>Medicamento: <strong>{medicamentoSeleccionado.nombreMed}</strong></label>
+                        </div>
+                        <div className="form-group">
+                            <label>Stock Actual: {medicamentoSeleccionado.cantidad}</label>
                         </div>
 
                         <div className="form-group">
-                            <label>Stock Actual</label>
-                            <input 
-                                type="text" 
-                                value={`${medicamentoSeleccionado.stockActual} unidades`}
-                                disabled
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Tipo de Movimiento <span className="required">*</span></label>
-                            <select 
-                                name="tipoMovimiento"
-                                value={formActualizar.tipoMovimiento}
-                                onChange={handleChangeForm}
-                            >
-                                <option value="">Seleccione tipo</option>
-                                <option value="entrada">Entrada (Agregar stock)</option>
-                                <option value="salida">Salida (Reducir stock)</option>
-                                <option value="ajuste">Ajuste de inventario</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Cantidad <span className="required">*</span></label>
-                            <input 
-                                type="number" 
-                                name="cantidad"
-                                value={formActualizar.cantidad}
-                                onChange={handleChangeForm}
-                                placeholder="Ingrese la cantidad"
+                            <label>Cantidad a Agregar <span className="required">*</span></label>
+                            <input
+                                type="number"
+                                value={cantidadAgregar}
+                                onChange={(e) => setCantidadAgregar(e.target.value)}
+                                placeholder="Ingrese cantidad"
                                 min="1"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Motivo <span className="required">*</span></label>
-                            <input 
-                                type="text" 
-                                name="motivo"
-                                value={formActualizar.motivo}
-                                onChange={handleChangeForm}
-                                placeholder="Ej: Compra nueva, Venta, Corrección"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Stock Mínimo</label>
-                            <input 
-                                type="number" 
-                                name="stockMinimo"
-                                value={formActualizar.stockMinimo}
-                                onChange={handleChangeForm}
                             />
                         </div>
 
                         <div className="action-buttons">
                             <button className="btn btn-primary" onClick={handleActualizarStock}>
-                                ✓ Actualizar Stock
+                                ✓ Confirmar
                             </button>
                             <button className="btn btn-secondary" onClick={handleCerrarModal}>
                                 ✕ Cancelar
