@@ -93,28 +93,59 @@ public class TicketService {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            // Header
-            Font fontHeader = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
-            Paragraph header = new Paragraph("Hospital La Curita - Ticket de Venta", fontHeader);
+            // Colors and Fonts
+            Font fontHeader = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, BaseColor.DARK_GRAY);
+            Font fontSubHeader = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.GRAY);
+            Font fontBody = FontFactory.getFont(FontFactory.HELVETICA, 10);
+            Font fontTableHead = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
+
+            // Header Section
+            Paragraph header = new Paragraph("HOSPITAL LA CURITA", fontHeader);
             header.setAlignment(Element.ALIGN_CENTER);
             document.add(header);
-            document.add(new Paragraph(" "));
 
-            document.add(new Paragraph("Folio: " + ticket.getId()));
-            document.add(new Paragraph("Fecha: " + ticket.getFecha().toString()));
-            document.add(new Paragraph("Cliente: " + ticket.getNombreCliente()));
-            document.add(new Paragraph(" "));
+            Paragraph subHeader = new Paragraph("Ticket de Compra", fontSubHeader);
+            subHeader.setAlignment(Element.ALIGN_CENTER);
+            subHeader.setSpacingAfter(20f);
+            document.add(subHeader);
 
-            // Table
+            // Info Section
+            PdfPTable infoTable = new PdfPTable(2);
+            infoTable.setWidthPercentage(100);
+            infoTable.setSpacingAfter(20f);
+
+            PdfPCell cellLeft = new PdfPCell();
+            cellLeft.setBorder(Rectangle.NO_BORDER);
+            cellLeft.addElement(new Paragraph("Folio: #" + ticket.getId(), fontBody));
+            cellLeft.addElement(new Paragraph("Cliente: " + ticket.getNombreCliente(), fontBody));
+            infoTable.addCell(cellLeft);
+
+            PdfPCell cellRight = new PdfPCell();
+            cellRight.setBorder(Rectangle.NO_BORDER);
+            cellRight.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            // Format Instant to nicer string
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter
+                    .ofPattern("dd/MM/yyyy HH:mm")
+                    .withZone(java.time.ZoneId.systemDefault());
+            cellRight.addElement(new Paragraph("Fecha: " + formatter.format(ticket.getFecha()), fontBody));
+            infoTable.addCell(cellRight);
+
+            document.add(infoTable);
+
+            // Details Table
             PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);
-            Stream.of("Concepto", "Cant", "Precio Unit", "Total")
-                    .forEach(columnTitle -> {
-                        PdfPCell headerCell = new PdfPCell();
-                        headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
-                        headerCell.setPhrase(new Phrase(columnTitle));
-                        table.addCell(headerCell);
-                    });
+            table.setWidths(new float[] { 4f, 1f, 2f, 2f });
+            table.setSpacingBefore(10f);
+
+            Stream.of("Concepto", "Cant.", "Precio Unit.", "Total").forEach(columnTitle -> {
+                PdfPCell headerCell = new PdfPCell();
+                headerCell.setBackgroundColor(new BaseColor(60, 141, 188)); // Hospital Blue
+                headerCell.setPadding(6f);
+                headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                headerCell.setPhrase(new Phrase(columnTitle, fontTableHead));
+                table.addCell(headerCell);
+            });
 
             BigDecimal totalGeneral = BigDecimal.ZERO;
 
@@ -133,24 +164,52 @@ public class TicketService {
                 BigDecimal totalLinea = precio.multiply(BigDecimal.valueOf(det.getCantidad()));
                 totalGeneral = totalGeneral.add(totalLinea);
 
-                table.addCell(concepto);
-                table.addCell(String.valueOf(det.getCantidad()));
-                table.addCell("$" + precio);
-                table.addCell("$" + totalLinea);
+                addCell(table, concepto, Element.ALIGN_LEFT);
+                addCell(table, String.valueOf(det.getCantidad()), Element.ALIGN_CENTER);
+                addCell(table, "$" + String.format("%.2f", precio), Element.ALIGN_RIGHT);
+                addCell(table, "$" + String.format("%.2f", totalLinea), Element.ALIGN_RIGHT);
             }
 
             document.add(table);
             document.add(new Paragraph(" "));
 
-            Paragraph totalP = new Paragraph("TOTAL: $" + totalGeneral,
-                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14));
-            totalP.setAlignment(Element.ALIGN_RIGHT);
-            document.add(totalP);
+            // Total Section
+            PdfPTable totalTable = new PdfPTable(2);
+            totalTable.setWidthPercentage(100);
+            totalTable.setWidths(new float[] { 7f, 3f });
+
+            PdfPCell emptyCell = new PdfPCell(new Phrase(""));
+            emptyCell.setBorder(Rectangle.NO_BORDER);
+            totalTable.addCell(emptyCell);
+
+            PdfPCell totalCell = new PdfPCell(new Phrase("TOTAL: $" + String.format("%.2f", totalGeneral),
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, BaseColor.BLACK)));
+            totalCell.setBorder(Rectangle.TOP);
+            totalCell.setPaddingTop(10f);
+            totalCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            totalTable.addCell(totalCell);
+
+            document.add(totalTable);
+
+            // Footer
+            Paragraph footer = new Paragraph("¡Gracias por su preferencia!",
+                    FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10, BaseColor.GRAY));
+            footer.setAlignment(Element.ALIGN_CENTER);
+            footer.setSpacingBefore(50f);
+            document.add(footer);
 
             document.close();
             return out.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException("Error al generar PDF", e);
         }
+    }
+
+    private void addCell(PdfPTable table, String text, int alignment) {
+        PdfPCell cell = new PdfPCell(new Phrase(text, FontFactory.getFont(FontFactory.HELVETICA, 10)));
+        cell.setPadding(5f);
+        cell.setHorizontalAlignment(alignment);
+        cell.setBorderColor(BaseColor.LIGHT_GRAY);
+        table.addCell(cell);
     }
 }
