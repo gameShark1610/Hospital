@@ -164,7 +164,9 @@ function MisCitas() {
   };
 
   const formatearFecha = (fechaStr) => {
-    const fecha = new Date(fechaStr);
+    const [year, month, day] = fechaStr.split("-");
+    const fecha = new Date(year, month - 1, day);
+
     return {
       dia: fecha.getDate(),
       mes: fecha.toLocaleDateString("es-MX", { month: "short" }),
@@ -176,6 +178,7 @@ function MisCitas() {
       })
     };
   };
+
 
   const renderAccionesCita = (cita) => {
     const hoy = new Date();

@@ -19,4 +19,5 @@ public class MisCitasResponseDTO {
     boolean pagado;
     Instant fechaPago;
     String notas;
+    String paciente;
 }

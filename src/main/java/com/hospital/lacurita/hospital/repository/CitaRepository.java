@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CitaRepository extends JpaRepository<Cita, Integer> {
     List<Cita> findByPacienteId(Integer id);
+
+    List<Cita> findByEstatusId(Integer id);
 }

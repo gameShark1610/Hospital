@@ -6,7 +6,7 @@ const DashboardDoctor = () => {
     const navigate = useNavigate();
     const [citasHoyList, setCitasHoyList] = useState([]);
     const [doctorName, setDoctorName] = useState("Doctor"); // Estado para el nombre
-    
+
     // Estado para las estadísticas
     const [stats, setStats] = useState({
         citasHoy: 0,
@@ -17,12 +17,12 @@ const DashboardDoctor = () => {
 
     // Fecha actual para mostrar en el encabezado
     const fechaActualTexto = new Date().toLocaleDateString('es-ES', {
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
         day: 'numeric'
     });
-    
+
     // 1. Obtener datos al cargar
     useEffect(() => {
         const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -56,8 +56,8 @@ const DashboardDoctor = () => {
     // 2. Procesar los datos crudos del Backend
     const procesarDatos = (data) => {
         // Obtener fecha de hoy en formato YYYY-MM-DD (igual que el backend)
-        const hoyString = new Date().toISOString().split('T')[0]; 
-        
+        const hoyString = new Date().toISOString().split('T')[0];
+
         // Si hay datos, tomamos el nombre del doctor del primer registro
         if (data.length > 0 && data[0].nombreDoctor) {
             setDoctorName(data[0].nombreDoctor);
@@ -65,14 +65,14 @@ const DashboardDoctor = () => {
 
         // Filtrar citas de HOY
         const citasDeHoy = data.filter(c => c.fechaAgendada === hoyString);
-        
+
         // Calcular Estadísticas
-        const pendientesTotal = data.filter(c => c.estatus === 'pending' || c.estatus === 'confirmed').length;
+        const pendientesTotal = data.filter(c => c.estatus === 'confirmed').length;
         const atendidosTotal = data.filter(c => c.estatus === 'completed').length;
 
         // Lógica para "Próxima Cita" (la primera de hoy que sea pendiente)
         // Nota: Esto asume que el backend devuelve las horas ordenadas, sino habría que ordenar.
-        const proxima = citasDeHoy.find(c => c.estatus === 'pending' || c.estatus === 'confirmed');
+        const proxima = citasDeHoy.find(c => c.estatus === 'confirmed');
         const horaProxima = proxima ? proxima.horario.split('-')[0].substring(0, 5) : '--:--';
 
         setStats({
@@ -88,15 +88,15 @@ const DashboardDoctor = () => {
     // 3. Auxiliar para formatear "08:20:00-08:40:00" a Hora y AM/PM
     const formatTimeInfo = (rangoHorario) => {
         if (!rangoHorario) return { hora: '--:--', periodo: '--' };
-        
+
         // Tomamos la hora de inicio "08:20:00"
-        const horaInicio = rangoHorario.split('-')[0]; 
+        const horaInicio = rangoHorario.split('-')[0];
         const [hour, minute] = horaInicio.split(':');
-        
+
         const h = parseInt(hour, 10);
         const periodo = h >= 12 ? 'PM' : 'AM';
         const hora12 = h % 12 || 12; // Convertir 0 a 12
-        
+
         return {
             hora: `${hora12}:${minute}`,
             periodo: periodo
@@ -106,7 +106,7 @@ const DashboardDoctor = () => {
     const handleAtender = (cita) => {
         console.log('Atender cita del paciente:', cita.nombrePaciente);
         // Como tu DTO actual no tiene CitaId, usaremos doctorId temporalmente o el índice
-        navigate(`/atender-cita/${cita.doctorId}`); 
+        navigate(`/atender-cita/${cita.doctorId}`);
     };
 
     const handleVerHistorial = (cita) => {
@@ -176,7 +176,7 @@ const DashboardDoctor = () => {
                                 <div key={index} className="cita-item">
                                     <div className="cita-hora">
                                         <div>{timeInfo.hora}</div>
-                                        <div style={{fontSize: '0.8rem'}}>{timeInfo.periodo}</div>
+                                        <div style={{ fontSize: '0.8rem' }}>{timeInfo.periodo}</div>
                                     </div>
                                     <div className="cita-info">
                                         <h3>{cita.nombrePaciente}</h3>
@@ -184,13 +184,13 @@ const DashboardDoctor = () => {
                                         <p>Consulta General - Cons. {cita.numConsultorio}</p>
                                     </div>
                                     <div className="cita-actions">
-                                        <button 
+                                        <button
                                             className="btn btn-primary"
                                             onClick={() => handleAtender(cita)}
                                         >
                                             Atender
                                         </button>
-                                        <button 
+                                        <button
                                             className="btn btn-secondary"
                                             onClick={() => handleVerHistorial(cita)}
                                         >

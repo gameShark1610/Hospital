@@ -248,7 +248,7 @@ const CitasDoctor = () => {
                                             </button>
                                             <button
                                                 className="btn btn-cancel"
-                                                onClick={() => handleCancelar(cita.doctorId)}
+                                                onClick={() => handleCancelar(cita.citasId)}
                                             >
                                                 Cancelar
                                             </button>
