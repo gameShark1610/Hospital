@@ -19,6 +19,10 @@ public class Doctor {
     private Integer numCedula;
 
     @NotNull
+    @Column(name = "Habilitado", nullable = false)
+    private Boolean habilitado;
+
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "EspecialidadId", nullable = false)
     private Especialidad especialidad;

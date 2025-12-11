@@ -156,6 +156,7 @@ public class UserService {
         Doctor doctor = new Doctor();
         doctor.setEmpleado(empleado);
         doctor.setNumCedula(request.getNumCedula());
+        doctor.setHabilitado(true);
 
         Especialidad especialidad = especialidadRepository.findById(request.getEspecialidadId())
                 .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
