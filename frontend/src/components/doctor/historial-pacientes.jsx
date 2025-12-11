@@ -167,6 +167,7 @@ const HistorialPacientes = () => {
                                     <th>Especialidad</th>
                                     <th>Diagnóstico</th>
                                     <th>Consultorio</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -182,7 +183,23 @@ const HistorialPacientes = () => {
                                         </td>
                                         <td>{bitacora.diagnostico}</td>
                                         <td>{bitacora.consultorio}</td>
-
+                                        <td>
+                                            <button
+                                                className="btn-ver-detalles"
+                                                onClick={() => verDetalle(bitacora)}
+                                                style={{
+                                                    padding: '5px 10px',
+                                                    fontSize: '0.9em',
+                                                    backgroundColor: '#3498db',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                👁️ Ver Detalles
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -225,25 +242,81 @@ const HistorialPacientes = () => {
                                 </div>
                             </div>
 
-                            {selectedBitacora.diagnostico && (
+                            {/* Receta Info */}
+                            {selectedBitacora.recetaFolio && (
                                 <div className="detail-section">
-                                    <h3>Diagnóstico</h3>
-                                    <p>{selectedBitacora.diagnostico}</p>
+                                    <h3>📄 Receta Folio: {selectedBitacora.recetaFolio}</h3>
                                 </div>
                             )}
 
-                            {selectedBitacora.notas && (
+                            {/* Diagnosticos */}
+                            {selectedBitacora.diagnosticos && selectedBitacora.diagnosticos.length > 0 ? (
+                                <div className="detail-section">
+                                    <h3>Diagnósticos</h3>
+                                    <ul>
+                                        {selectedBitacora.diagnosticos.map((diag, idx) => (
+                                            <li key={idx}>{diag}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ) : (
+                                selectedBitacora.diagnostico && (
+                                    <div className="detail-section">
+                                        <h3>Diagnóstico</h3>
+                                        <p>{selectedBitacora.diagnostico}</p>
+                                    </div>
+                                )
+                            )}
+
+                            {/* Observaciones */}
+                            {selectedBitacora.observaciones && selectedBitacora.observaciones.length > 0 ? (
                                 <div className="detail-section">
                                     <h3>Observaciones</h3>
-                                    <p>{selectedBitacora.notas}</p>
+                                    <ul>
+                                        {selectedBitacora.observaciones.map((obs, idx) => (
+                                            <li key={idx}>{obs}</li>
+                                        ))}
+                                    </ul>
                                 </div>
+                            ) : (
+                                selectedBitacora.notas && (
+                                    <div className="detail-section">
+                                        <h3>Observaciones</h3>
+                                        <p>{selectedBitacora.notas}</p>
+                                    </div>
+                                )
                             )}
 
-                            {selectedBitacora.tratamiento && (
+                            {/* Medicamentos */}
+                            {selectedBitacora.medicamentos && selectedBitacora.medicamentos.length > 0 ? (
                                 <div className="detail-section">
-                                    <h3>Tratamiento</h3>
-                                    <p>{selectedBitacora.tratamiento}</p>
+                                    <h3>Medicamentos Recetados</h3>
+                                    <table className="medicamentos-table" style={{ width: '100%', marginTop: '10px', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr style={{ backgroundColor: '#f8f9fa' }}>
+                                                <th style={{ padding: '8px', border: '1px solid #dee2e6' }}>Medicamento</th>
+                                                <th style={{ padding: '8px', border: '1px solid #dee2e6' }}>Tratamiento</th>
+                                                <th style={{ padding: '8px', border: '1px solid #dee2e6' }}>Duración</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {selectedBitacora.medicamentos.map((med, idx) => (
+                                                <tr key={idx}>
+                                                    <td style={{ padding: '8px', border: '1px solid #dee2e6' }}>{med.nombre}</td>
+                                                    <td style={{ padding: '8px', border: '1px solid #dee2e6' }}>{med.tratamiento}</td>
+                                                    <td style={{ padding: '8px', border: '1px solid #dee2e6' }}>{med.duracion}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
+                            ) : (
+                                selectedBitacora.tratamiento && (
+                                    <div className="detail-section">
+                                        <h3>Tratamiento</h3>
+                                        <p>{selectedBitacora.tratamiento}</p>
+                                    </div>
+                                )
                             )}
                         </>
                     )}

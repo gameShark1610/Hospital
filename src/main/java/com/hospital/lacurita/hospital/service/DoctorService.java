@@ -34,18 +34,21 @@ public class DoctorService {
     private final EmpleadoRepository empleadoRepository;
     private final BitacoraHistorialRepository bitacoraHistorialRepository;
     private final HistorialAlergiaRepository historialAlergiaRepository;
+    private final com.hospital.lacurita.hospital.repository.RecetaRepository recetaRepository;
 
     public DoctorService(DoctorRepository doctorRepository, UserService userService,
             PacienteRepository pacienteRepository, UserRepository userRepository,
             EmpleadoRepository empleadoRepository,
             BitacoraHistorialRepository bitacoraHistorialRepository,
-            HistorialAlergiaRepository historialAlergiaRepository) {
+            HistorialAlergiaRepository historialAlergiaRepository,
+            com.hospital.lacurita.hospital.repository.RecetaRepository recetaRepository) {
         this.doctorRepository = doctorRepository;
         this.userService = userService;
         this.pacienteRepository = pacienteRepository;
         this.empleadoRepository = empleadoRepository;
         this.bitacoraHistorialRepository = bitacoraHistorialRepository;
         this.historialAlergiaRepository = historialAlergiaRepository;
+        this.recetaRepository = recetaRepository;
     }
 
     public List<DoctorDTO> getDoctoresPorEspecialidad(Integer especialidadId) {
@@ -175,8 +178,36 @@ public class DoctorService {
         List<HistorialPacienteDTO.BitacoraDetalleDTO> bitacoraMapped = bitacoraRaw.stream()
                 .map(b -> {
 
-                    Doctor doctor= doctorRepository.findById(b.getDoctorId()).orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
-                    String medicoNombre = "Dr. " + doctor.getEmpleado().getUsuario().getPersona().getNombre()+" "+doctor.getEmpleado().getUsuario().getPersona().getPaterno()+" "+doctor.getEmpleado().getUsuario().getPersona().getMaterno();
+                    Doctor doctor = doctorRepository.findById(b.getDoctorId())
+                            .orElseThrow(() -> new RuntimeException("Doctor no encontrado"));
+                    String medicoNombre = "Dr. " + doctor.getEmpleado().getUsuario().getPersona().getNombre() + " "
+                            + doctor.getEmpleado().getUsuario().getPersona().getPaterno() + " "
+                            + doctor.getEmpleado().getUsuario().getPersona().getMaterno();
+
+                    // Fetch details from view
+                    Integer folioCita = b.getFolio(); // Assuming Folio in Bitacora maps to FolioCita
+                    List<com.hospital.lacurita.hospital.repository.RecetaRepository.RecetaEmitidaProjection> detalles = recetaRepository
+                            .findRecetaDetalles(folioCita);
+
+                    List<String> diagnosticos = detalles.stream()
+                            .map(d -> d.getDiagnostico())
+                            .distinct()
+                            .collect(Collectors.toList());
+
+                    List<String> observaciones = detalles.stream()
+                            .map(d -> d.getObservacion())
+                            .distinct()
+                            .collect(Collectors.toList());
+
+                    List<HistorialPacienteDTO.BitacoraDetalleDTO.MedicamentoDetalleDTO> medicamentos = detalles.stream()
+                            .map(d -> new HistorialPacienteDTO.BitacoraDetalleDTO.MedicamentoDetalleDTO(
+                                    d.getMedicamento(),
+                                    d.getTratamiento(),
+                                    d.getDuracion()))
+                            .collect(Collectors.toList());
+
+                    Integer recetaFolio = detalles.isEmpty() ? null : detalles.get(0).getFolio();
+
                     return new HistorialPacienteDTO.BitacoraDetalleDTO(
                             b.getId(),
                             b.getFechaMov(),
@@ -185,10 +216,14 @@ public class DoctorService {
                             b.getEspecialidad(),
                             b.getDiagnostico(),
                             String.valueOf(b.getConsultorio()),
-                            null,
-                            null,
-                            null,
-                            null);
+                            null, // motivo
+                            null, // sintomas
+                            null, // tratamiento (legacy)
+                            null, // notas (legacy)
+                            recetaFolio,
+                            diagnosticos,
+                            observaciones,
+                            medicamentos);
                 }).collect(Collectors.toList());
 
         // 5. Calculate Age

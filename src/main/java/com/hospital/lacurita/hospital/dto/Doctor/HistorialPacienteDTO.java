@@ -38,5 +38,20 @@ public class HistorialPacienteDTO {
         private String sintomas; // Optional
         private String tratamiento; // Optional
         private String notas; // Optional
+
+        // New Detailed Fields
+        private Integer recetaFolio;
+        private List<String> diagnosticos;
+        private List<String> observaciones;
+        private List<MedicamentoDetalleDTO> medicamentos;
+
+        @Data
+        @AllArgsConstructor
+        @NoArgsConstructor
+        public static class MedicamentoDetalleDTO {
+            private String nombre;
+            private String tratamiento;
+            private String duracion;
+        }
     }
 }
