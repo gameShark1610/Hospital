@@ -24,25 +24,31 @@ public class TicketService {
     private final MedicamentoRepository medicamentoRepository;
     private final ServicioRepository servicioRepository; // Check if exists
     private final EmpleadoRepository empleadoRepository; // Context to set who created it? Or null.
+    private final UserService userService;
 
     public TicketService(TicketRepository ticketRepository,
             TicketDetalleRepository ticketDetalleRepository,
             MedicamentoRepository medicamentoRepository,
             ServicioRepository servicioRepository,
-            EmpleadoRepository empleadoRepository) {
+            EmpleadoRepository empleadoRepository, UserService userService) {
         this.ticketRepository = ticketRepository;
         this.ticketDetalleRepository = ticketDetalleRepository;
         this.medicamentoRepository = medicamentoRepository;
         this.servicioRepository = servicioRepository;
         this.empleadoRepository = empleadoRepository;
+        this.userService = userService;
     }
 
     @Transactional
     public Integer crearTicket(TicketDTO dto) {
+        Integer usuarioId = userService.obtenerUsuarioIdActual();
+        Empleado empleado = empleadoRepository.findByUsuarioId(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
         Ticket ticket = new Ticket();
         ticket.setNombreCliente(dto.getNombreCliente());
         ticket.setFecha(Instant.now());
-        // Employee logic omitted for simplicity or can be added if we have current user
+        ticket.setEmpleado(empleado);
         // context
 
         Ticket savedTicket = ticketRepository.save(ticket);
