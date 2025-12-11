@@ -7,6 +7,10 @@ const ConsultarBitacora = () => {
     const [bitacoraData, setBitacoraData] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [filterDoctor, setFilterDoctor] = useState('');
+    const [filterDate, setFilterDate] = useState('');
+    const [filterStatus, setFilterStatus] = useState('');
+
     useEffect(() => {
         const fetchBitacora = async () => {
             try {
@@ -38,6 +42,20 @@ const ConsultarBitacora = () => {
         }
     };
 
+    // Filter logic
+    const filteredData = bitacoraData.filter(registro => {
+        const matchDoctor = registro.medico.toLowerCase().includes(filterDoctor.toLowerCase());
+        const matchStatus = registro.estatus.toLowerCase().includes(filterStatus.toLowerCase());
+
+        let matchDate = true;
+        if (filterDate) {
+            const registroDate = new Date(registro.fechaMov).toISOString().split('T')[0];
+            matchDate = registroDate === filterDate;
+        }
+
+        return matchDoctor && matchStatus && matchDate;
+    });
+
     return (
         <div className="consultar-bitacora-container">
             <nav className="navbar">
@@ -61,6 +79,38 @@ const ConsultarBitacora = () => {
                 </div>
 
                 <div className="section">
+                    <div className="filters-container" style={{ marginBottom: '20px', display: 'flex', gap: '15px' }}>
+                        <div className="form-group">
+                            <label>Buscar por Doctor:</label>
+                            <input
+                                type="text"
+                                placeholder="Nombre del doctor"
+                                value={filterDoctor}
+                                onChange={(e) => setFilterDoctor(e.target.value)}
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Filtrar por Estatus:</label>
+                            <input
+                                type="text"
+                                placeholder="Ej. Confirmada, Pendiente"
+                                value={filterStatus}
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Fecha:</label>
+                            <input
+                                type="date"
+                                value={filterDate}
+                                onChange={(e) => setFilterDate(e.target.value)}
+                                className="form-control"
+                            />
+                        </div>
+                    </div>
+
                     {loading ? (
                         <p>Cargando registros...</p>
                     ) : (
@@ -76,8 +126,8 @@ const ConsultarBitacora = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {bitacoraData.length > 0 ? (
-                                    bitacoraData.map((registro) => (
+                                {filteredData.length > 0 ? (
+                                    filteredData.map((registro) => (
                                         <tr key={registro.bitacoraId}>
                                             <td>{registro.bitacoraId}</td>
                                             <td>{new Date(registro.fechaMov).toLocaleString()}</td>
@@ -93,7 +143,7 @@ const ConsultarBitacora = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" style={{ textAlign: 'center' }}>No hay registros disponibles</td>
+                                        <td colSpan="6" style={{ textAlign: 'center' }}>No se encontraron registros cons los filtros seleccionados</td>
                                     </tr>
                                 )}
                             </tbody>
