@@ -257,10 +257,6 @@ function Perfil() {
         <div className="profile-section">
           <h2 className="section-title">Información Personal</h2>
 
-          <div className="info-box">
-            <p>💡 Haz clic en "Editar" para modificar tu información</p>
-          </div>
-
           <form onSubmit={handleSavePersonal}>
             <div className="form-row">
               <div className="form-group">

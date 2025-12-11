@@ -254,14 +254,7 @@ const CitasDoctor = () => {
                                             </button>
                                         </>
                                     )}
-                                    {(cita.estatus === 'completed' || cita.estatus === 'cancelled' || cita.estatus === 'to cancel') && (
-                                        <button
-                                            className="btn btn-secondary"
-                                            onClick={() => handleVerHistorial(cita.doctorId)}
-                                        >
-                                            Ver Detalles
-                                        </button>
-                                    )}
+
                                 </div>
                             </div>
                         );

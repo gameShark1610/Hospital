@@ -99,8 +99,7 @@ const PanelRecepcionista = () => {
 
             <div className="container">
                 <div className="welcome-section">
-                    <h1>👋 Bienvenida, Ana García</h1>
-                    <p>Panel de Administración - Recepción Hospital</p>
+                    <h1>Panel de Administración - Recepción Hospital</h1>
                 </div>
 
                 {/* Funciones Principales */}

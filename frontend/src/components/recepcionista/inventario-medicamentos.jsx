@@ -154,12 +154,6 @@ const InventarioMedicamentos = () => {
                     <h2 className="section-title">Inventario Actual</h2>
 
                     <div className="search-filter">
-                        <input
-                            type="text"
-                            value={busqueda}
-                            onChange={(e) => setBusqueda(e.target.value)}
-                            placeholder="Buscar medicamento..."
-                        />
                         <select
                             value={filtroEstado}
                             onChange={(e) => setFiltroEstado(e.target.value)}

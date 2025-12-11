@@ -245,7 +245,7 @@ const HistorialPacientes = () => {
                             {/* Receta Info */}
                             {selectedBitacora.recetaFolio && (
                                 <div className="detail-section">
-                                    <h3>📄 Receta Folio: {selectedBitacora.recetaFolio}</h3>
+                                    <h3>Receta Folio: {selectedBitacora.recetaFolio}</h3>
                                 </div>
                             )}
 

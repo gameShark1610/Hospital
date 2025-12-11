@@ -295,9 +295,6 @@ function MisCitas() {
               <div className="empty-state-icon">📅</div>
               <h3>No hay citas</h3>
               <p>No tienes citas agendadas en esta categoría</p>
-              <button className="btn btn-pay" onClick={() => navigate("/citas")}>
-                Agendar una cita
-              </button>
             </div>
           ) : (
             citasFiltradas.map((cita) => {
