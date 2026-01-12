@@ -23,6 +23,7 @@ import DoctorMisCitas from "./components/doctor/mis-citas";
 import AprobarCancelaciones from "./components/recepcionista/aprobar_cancelaciones";
 import PerfilRecepcionista from "./components/recepcionista/perfil-recepcionista";
 import AtenderCita from "./components/doctor/atender";
+import DoctorPagar from "./components/doctor/doctor-pagar";
 import "./App.css";
 
 //It checks if there’s a flag called "isLoggedIn" in localStorage. If the flag is present, it allows access to the protected route; otherwise, it redirects the user to the login page.
@@ -62,6 +63,15 @@ function App() {
           element={
             <ProtectedRoute>
               <AtenderCita />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/doctor/pagar"
+          element={
+            <ProtectedRoute>
+              <DoctorPagar />
             </ProtectedRoute>
           }
         />

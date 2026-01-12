@@ -123,7 +123,7 @@ function MisCitas() {
   };
 
   const irAPagar = (cita) => {
-    navigate("/usuario/pagar", { state: { cita } });
+    navigate("/doctor/pagar", { state: { cita } });
   };
 
   const cancelarCita = async (citaId) => {
